@@ -1,0 +1,24 @@
+\section{MDP 建模}
+\label{sec:mdp}
+
+我们将第~\ref{sec:problem:objective} 节的在线选路优化形式化为马尔可夫决策过程 $(\mathcal{S},\mathcal{A},P,r)$。智能体在序列内逐流决策：第 $t$ 步为第 $t$ 条流 $\mathbf{f}_t$ 从其候选集 $\mathcal{P}_t$ 中选定一条路径。
+
+\textbf{状态} $s_t\in\mathcal{S}$ 由三部分组成：
+\begin{enumerate}
+\item \emph{图快照}：节点特征（标记当前流的源宿 $o_t,v_t$）与链路特征 $[d_e,\,c_e,\,b_e^{\text{res}}]$（时延、容量、剩余带宽）；
+\item \emph{流意图向量} $m_t=[\phi_t,\,\tilde b_t]$，其中 $\tilde b_t$ 为归一化带宽需求；
+\item \emph{候选路径} $\mathcal{P}_t$ 及其有效性掩码。
+\end{enumerate}
+观测仅包含当前流 $\mathbf{f}_t$，不含未来流 $\{\mathbf{f}_\tau\}_{\tau>t}$，与第~\ref{sec:problem:objective} 节的在线因果约束一致。
+
+\textbf{动作} $a_t\in\mathcal{A}=\{0,1,\dots,K-1\}$ 为离散选择，从 $K$ 条候选路径中选定第 $a_t$ 条 $p_t=p_t^{a_t}$ 承载当前流。
+
+\textbf{转移} 需区分两个层面。给定当前流与所选路径，\emph{资源记账是确定且已知的}：沿途链路的剩余带宽 $b_e^{\text{res}}$ 按式~\eqref{eq:rho} 的 $\hat b_t$ 扣减，指针前移。然而下一条到达的流 $\mathbf{f}_{t+1}$ 由需求分布 $\mathcal{D}$ 产生、在到达前对智能体不可见，且不受当前动作影响。因此完整状态的转移 $P(s_{t+1}\mid s_t,a_t)$ 并非确定性的（给定 $s_t,a_t$ 后 $s_{t+1}$ 不唯一）——其随机性来自下一条流的到达。这正是第~\ref{sec:problem:why_rl} 节所述“确定记账、未来不可见”的结构。
+
+\textbf{奖励} 直接取自第~\ref{sec:problem:objective} 节的效用函数 $U(\mathbf{f}_t,p_t)$（式~\eqref{eq:utility}）。平移一个常数 $-1$ 以收窄奖励范围、便于价值函数学习：
+\begin{equation}
+r_t = U(\mathbf{f}_t, p_t) - 1
+    = -1 + U^{\text{bw}}_t + U^{\text{dl}}_t.
+\label{eq:reward}
+\end{equation}
+奖励区间为 $[-1, 1]$：大象流（$\phi_t\to 1$）的时延效用项趋于零，奖励上界为 $0$（$\rho_t=1$ 时取到）；老鼠流（$\phi_t\to 0$）在带宽被完全满足（$\rho_t\ge 1$）且时延极低时可达正值。由于平移常数不改变最优策略，最大化累积奖励 $\sum_t r_t$ 与最大化累积效用（式~\eqref{eq:objective}）等价。式~\eqref{eq:reward} 的结构意味着：智能体若要同时在老鼠流（要求带宽硬满足与低时延）与大象流（看重吞吐比率）上获得高奖励，其策略必须\emph{感知并区分每条流的 QoS 意图} $\phi_t$。这一要求正是下一节流感知表示的设计动机。

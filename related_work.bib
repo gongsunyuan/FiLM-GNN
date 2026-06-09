@@ -1,0 +1,337 @@
+%% ====== 引言 8 篇（分散出现在 Related Work 各节） ======
+@misc{CISCO2023_GlobalTraffic,
+    title  = {{Cisco Annual Internet Report (2018--2023)}},
+    author = {{Cisco}},
+    year   = {2020},
+    howpublished = {\url{https://www.cisco.com/c/en/us/solutions/collateral/executive-perspectives/annual-internet-report/white-paper-c11-741490.html}}
+}
+
+@ARTICLE{Wang1996_QoSRouting,
+  author={Zheng Wang and Crowcroft, J.},
+  journal={IEEE Journal on Selected Areas in Communications}, 
+  title={{Quality-of-service routing for supporting multimedia applications}}, 
+  year={1996},
+  volume={14},
+  number={7},
+  pages={1228-1234},
+  keywords={Quality of service;Routing protocols;Computer networks;Bandwidth;Costs;Computer architecture;Admission control;Scheduling algorithm;Delay;Scalability},
+  doi={10.1109/49.536364}}
+
+@INPROCEEDINGS{Fortz2000_TrafficEngineering,
+  author={Fortz, B. and Thorup, M.},
+  booktitle={Proceedings IEEE INFOCOM 2000. Conference on Computer Communications. Nineteenth Annual Joint Conference of the IEEE Computer and Communications Societies (Cat. No.00CH37064)}, 
+  title={{Internet traffic engineering by optimizing OSPF weights}}, 
+  year={2000},
+  volume={2},
+  number={},
+  pages={519-528 vol.2},
+  keywords={Telecommunication traffic;Web and internet services;Spine;Multiprotocol label switching;Throughput;Traffic control;Laboratories;Routing protocols;Load management;Testing},
+  doi={10.1109/INFCOM.2000.832225}}
+
+@ARTICLE{Sun2022_ScalableRouting_TON,
+  author={Sun, Penghao and Guo, Zehua and Li, Junfei and Xu, Yang and Lan, Julong and Hu, Yuxiang},
+  journal={IEEE/ACM Transactions on Networking}, 
+  title={{Enabling Scalable Routing in Software-Defined Networks With Deep Reinforcement Learning on Critical Nodes}}, 
+  year={2022},
+  volume={30},
+  number={2},
+  pages={629-640},
+  keywords={Routing;Network topology;Topology;Knowledge engineering;Robustness;Reinforcement learning;Neural networks;Software-defined networking;deep reinforcement learning;pinning control;routing optimization},
+  doi={10.1109/TNET.2021.3126933}}
+
+
+@ARTICLE{He2024_RoutingOptimization_TMC,
+  author={He, Qiang and Wang, Yu and Wang, Xingwei and Xu, Weiqiang and Li, Fuliang and Yang, Kaiqi and Ma, Lianbo},
+  journal={IEEE Transactions on Mobile Computing}, 
+  title={{Routing Optimization With Deep Reinforcement Learning in Knowledge Defined Networking}}, 
+  year={2024},
+  volume={23},
+  number={2},
+  pages={1444-1455},
+  keywords={Routing;Optimization;Network topology;Knowledge engineering;Training;Reinforcement learning;Load modeling;Deep reinforcement learning;graph neural network;knowledge defined networking;routing optimization},
+  doi={10.1109/TMC.2023.3235446}}
+
+% 条件化网络 / FiLM
+@inproceedings{Perez2018_FiLM,
+author = {Perez, Ethan and Strub, Florian and de Vries, Harm and Dumoulin, Vincent and Courville, Aaron},
+title = {{FiLM: visual reasoning with a general conditioning layer}},
+year = {2018},
+isbn = {978-1-57735-800-8},
+publisher = {AAAI Press},
+abstract = {We introduce a general-purpose conditioning method for neural networks called FiLM: Feature-wise Linear Modulation. FiLM layers influence neural network computation via a simple, feature-wise affine transformation based on conditioning information. We show that FiLM layers are highly effective for visual reasoning — answering image-related questions which require a multi-step, high-level process — a task which has proven difficult for standard deep learning methods that do not explicitly model reasoning. Specifically, we show on visual reasoning tasks that FiLM layers 1) halve state-of-the-art error for the CLEVR benchmark, 2) modulate features in a coherent manner, 3) are robust to ablations and architectural modifications, and 4) generalize well to challenging, new data from few examples or even zero-shot.},
+booktitle = {Proceedings of the Thirty-Second AAAI Conference on Artificial Intelligence and Thirtieth Innovative Applications of Artificial Intelligence Conference and Eighth AAAI Symposium on Educational Advances in Artificial Intelligence},
+articleno = {483},
+numpages = {10},
+location = {New Orleans, Louisiana, USA},
+series = {AAAI'18/IAAI'18/EAAI'18}
+}
+
+% ⑨ GNN-FiLM: 方法学引用根。γ/β 来自目标节点表示
+@InProceedings{Brockschmidt2020_GNNFiLM,
+  title = {{{GNN}-{F}i{LM}: Graph Neural Networks with Feature-wise Linear Modulation}},
+  author =  {Brockschmidt, Marc},
+  booktitle = {Proceedings of the 37th International Conference on Machine Learning},
+  pages = {1144--1152},
+  year = 	 {2020},
+  editor = {III, Hal Daumé and Singh, Aarti},
+  volume = 	 {119},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {13--18 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v119/brockschmidt20a/brockschmidt20a.pdf},
+  url = 	 {https://proceedings.mlr.press/v119/brockschmidt20a.html},
+  abstract = 	 {This paper presents a new Graph Neural Network (GNN) type using feature-wise linear modulation (FiLM). Many standard GNN variants propagate information along the edges of a graph by computing messages based only on the representation of the source of each edge. In GNN-FiLM, the representation of the target node of an edge is used to compute a transformation that can be applied to all incoming messages, allowing feature-wise modulation of the passed information. Different GNN architectures are compared in extensive experiments on three tasks from the literature, using re-implementations of many baseline methods. Hyperparameters for all methods were found using extensive search, yielding somewhat surprising results: differences between state of the art models are much smaller than reported in the literature and well-known simple baselines that are often not compared to perform better than recently proposed GNN variants. Nonetheless, GNN-FiLM outperforms these methods on a regression task on molecular graphs and performs competitively on other tasks.}
+}
+
+@ARTICLE{Rusek2020_JSAC_RouteNet,
+  author={Rusek, Krzysztof and Suárez-Varela, José and Almasan, Paul and Barlet-Ros, Pere and Cabellos-Aparicio, Albert},
+  journal={IEEE Journal on Selected Areas in Communications}, 
+  title={{RouteNet: Leveraging Graph Neural Networks for Network Modeling and Optimization in SDN}}, 
+  year={2020},
+  volume={38},
+  number={10},
+  pages={2260-2270},
+  keywords={Optimization;Delays;Routing;Network topology;Computational modeling;Topology;Predictive models;Graph Neural Networks;network modeling;network optimization;Software-Defined Networks},
+  doi={10.1109/JSAC.2020.3000405}}
+
+
+% ⑤ RouteNet-Fermi: GNN 网络性能预测器 (delay/jitter/loss)
+@article{FerriolGalmes_2023_RouteNetFermi,
+author = {Ferriol-Galm\'{e}s, Miquel and Paillisse, Jordi and Su\'{a}rez-Varela, Jos\'{e} and Rusek, Krzysztof and Xiao, Shihan and Shi, Xiang and Cheng, Xiangle and Barlet-Ros, Pere and Cabellos-Aparicio, Albert},
+title = {{RouteNet-Fermi: Network Modeling With Graph Neural Networks}},
+year = {2023},
+issue_date = {Dec. 2023},
+publisher = {IEEE Press},
+volume = {31},
+number = {6},
+issn = {1063-6692},
+url = {https://doi.org/10.1109/TNET.2023.3269983},
+doi = {10.1109/TNET.2023.3269983},
+abstract = {Network models are an essential block of modern networks. For example, they are widely used in network planning and optimization. However, as networks increase in scale and complexity, some models present limitations, such as the assumption of Markovian traffic in queuing theory models, or the high computational cost of network simulators. Recent advances in machine learning, such as Graph Neural Networks (GNN), are enabling a new generation of network models that are data-driven and can learn complex non-linear behaviors. In this paper, we present RouteNet-Fermi, a custom GNN model that shares the same goals as Queuing Theory, while being considerably more accurate in the presence of realistic traffic models. The proposed model predicts accurately the delay, jitter, and packet loss of a network. We have tested RouteNet-Fermi in networks of increasing size (up to 300 nodes), including samples with mixed traffic profiles — e.g., with complex non-Markovian models — and arbitrary routing and queue scheduling configurations. Our experimental results show that RouteNet-Fermi achieves similar accuracy as computationally-expensive packet-level simulators and scales accurately to larger networks. Our model produces delay estimates with a mean relative error of 6.24% when applied to a test dataset of 1,000 samples, including network topologies one order of magnitude larger than those seen during training. Finally, we have also evaluated RouteNet-Fermi with measurements from a physical testbed and packet traces from a real-life network.},
+journal = {IEEE/ACM Trans. Netw.},
+month = may,
+pages = {3080–3095},
+numpages = {16}
+}
+
+
+
+%% ====== Related Work §A：传统 QoS 路由（5 篇新） ======
+
+
+@INPROCEEDINGS{Brundiers2021_Loops_SR_TE,
+  author={Brundiers, Alexander and Schüller, Timmy and Aschenbruck, Nils},
+  booktitle={2021 IEEE 46th Conference on Local Computer Networks (LCN)}, 
+  title={{On the Benefits of Loops for Segment Routing Traffic Engineering}}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={32-40},
+  keywords={Network topology;Conferences;Web and internet services;Routing;Computer networks;Topology;Optimization},
+  doi={10.1109/LCN52139.2021.9524958}}
+
+
+
+@INPROCEEDINGS{Brundiers2022_Midpoint_SR_INFOCOM,
+  author={Brundiers, Alexander and Schüller, Timmy and Aschenbruck, Nils},
+  booktitle={IEEE INFOCOM 2022 - IEEE Conference on Computer Communications}, 
+  title={{Midpoint Optimization for Segment Routing}}, 
+  year={2022},
+  volume={},
+  number={},
+  pages={1579-1588},
+  keywords={Protocols;Conferences;Web and internet services;Traffic control;Logic gates;Routing;Topology},
+  doi={10.1109/INFOCOM48880.2022.9796747}}
+
+
+%% ====== Related Work §B：DRL 路由（6 篇新） ======
+
+@INPROCEEDINGS{Liu2021_DRLOr_INFOCOM,
+  author={Liu, Chenyi and Xu, Mingwei and Yang, Yuan and Geng, Nan},
+  booktitle={IEEE INFOCOM 2021 - IEEE Conference on Computer Communications}, 
+  title={{DRL-OR: Deep Reinforcement Learning-based Online Routing for Multi-type Service Requirements}}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={1-10},
+  keywords={Learning systems;Computer network reliability;Scalability;Reinforcement learning;Quality of service;Computer architecture;Routing},
+  doi={10.1109/INFOCOM42981.2021.9488736}}
+
+
+@ARTICLE{Suzuki2023_MADRL_Routing_TNSM,
+  author={Suzuki, Akito and Kobayashi, Masahiro and Oki, Eiji},
+  journal={IEEE Transactions on Network and Service Management}, 
+  title={{Multi-Agent Deep Reinforcement Learning for Cooperative Computing Offloading and Route Optimization in Multi Cloud-Edge Networks}}, 
+  year={2023},
+  volume={20},
+  number={4},
+  pages={4416-4434},
+  keywords={Task analysis;Optimization;Network topology;Servers;Cloud computing;Wireless communication;Bandwidth;Edge computing;cloud computing;deep reinforcement learning;task offloading;route optimization},
+  doi={10.1109/TNSM.2023.3267809}}
+
+
+@ARTICLE{CasasVelasco2021_DRSIR_TNSM,
+  author={Casas-Velasco, Daniela M. and Rendon, Oscar Mauricio Caicedo and da Fonseca, Nelson L. S.},
+  journal={IEEE Transactions on Network and Service Management}, 
+  title={{DRSIR: A Deep Reinforcement Learning Approach for Routing in Software-Defined Networking}}, 
+  year={2022},
+  volume={19},
+  number={4},
+  pages={4807-4820},
+  keywords={Routing;Artificial neural networks;Topology;Reinforcement learning;Network topology;Computer architecture;Computational modeling;Deep reinforcement learning;routing;software defined networking},
+  doi={10.1109/TNSM.2021.3132491}}
+
+
+@ARTICLE{Chen2022_MultiagentMeta_TNNLS,
+  author={Chen, Long and Hu, Bin and Guan, Zhi-Hong and Zhao, Lian and Shen, Xuemin},
+  journal={IEEE Transactions on Neural Networks and Learning Systems}, 
+  title={{Multiagent Meta-Reinforcement Learning for Adaptive Multipath Routing Optimization}}, 
+  year={2022},
+  volume={33},
+  number={10},
+  pages={5374-5386},
+  keywords={Routing;Optimization;Task analysis;Heuristic algorithms;Spread spectrum communication;Routing protocols;Training;Adaptive routing;metapolicy gradient;multiagent;reinforcement learning (RL)},
+  doi={10.1109/TNNLS.2021.3070584}}
+
+
+
+% ⑫ DQS: QoS 驱动 DRL 路由 + 七参数流分类器, 差异化 CoS
+@article{Sanchez2024_DQS_JPDC,
+title = {{DQS: A QoS-driven routing optimization approach in SDN using deep reinforcement learning}},
+journal = {Journal of Parallel and Distributed Computing},
+volume = {188},
+pages = {104851},
+year = {2024},
+issn = {0743-7315},
+doi = {https://doi.org/10.1016/j.jpdc.2024.104851},
+url = {https://www.sciencedirect.com/science/article/pii/S0743731524000157},
+author = {Lizeth Patricia {Aguirre Sanchez} and Yao Shen and Minyi Guo},
+keywords = {Optimization routing, QoS, Deep reinforcement learning, SDN},
+abstract = {In recent decades, the exponential growth of applications has intensified traffic demands, posing challenges in ensuring optimal user experiences within modern networks. Traditional congestion avoidance and control mechanisms embedded in conventional routing struggle to promptly adapt to new-generation networks. Current routing approaches risk-averse outcomes such as (1) scalability constraints, (2) high convergence times, and (3) congestion due to inadequate real-time traffic prioritization. To address these issues, this paper introduces a QoS-Driven Routing Optimization in Software-Defined Networking (SDN) using Deep Reinforcement Learning (DRL) to optimize routing and enhance QoS efficiency. Employing DRL, the proposed DQS optimizes routing decisions by intelligently distributing traffic, guided by a multi-objective function-driven DRL agent that considers both link and queue metrics. Despite the complexity of the network, DQS sustains scalability while significantly reducing convergence times. Through a Docker-based Openflow prototype, results highlight a substantial 20-30\% reduction in end-to-end delay compared to baseline methods.}
+}
+
+%% ====== Related Work §C：GNN 路由（7 篇新） ======
+
+@ARTICLE{Huang2024_ToN_xNetModeling,
+  author={Huang, Sijiang and Wei, Yunze and Peng, Lingfeng and Wang, Mowei and Hui, Linbo and Liu, Peng and Du, Zongpeng and Liu, Zhenhua and Cui, Yong},
+  journal={IEEE/ACM Transactions on Networking}, 
+  title={{xNet: Modeling Network Performance With Graph Neural Networks}}, 
+  year={2024},
+  volume={32},
+  number={2},
+  pages={1753-1767},
+  keywords={Predictive models;Graph neural networks;Quality of service;Measurement;Delays;Topology;Planning;Network modeling;network performance inference;graph neural networks},
+  doi={10.1109/TNET.2023.3329357}}
+
+
+
+
+% ====== GNN for Networking / Routing (2021-2024) ======
+@ARTICLE{Munikoti2024_DRL_GNN_TNNLS,
+  author={Munikoti, Sai and Agarwal, Deepesh and Das, Laya and Halappanavar, Mahantesh and Natarajan, Balasubramaniam},
+  journal={IEEE Transactions on Neural Networks and Learning Systems}, 
+  title={{Challenges and Opportunities in Deep Reinforcement Learning With Graph Neural Networks: A Comprehensive Review of Algorithms and Applications}}, 
+  year={2024},
+  volume={35},
+  number={11},
+  pages={15051-15071},
+  keywords={Graph neural networks;Deep learning;Markov processes;Surveys;Mathematical models;Computer architecture;Computational modeling;Deep learning;deep reinforcement learning (DRL);graph neural network (GNN);hybrid DRL-GNN;survey},
+  doi={10.1109/TNNLS.2023.3283523}}
+
+
+@article{Almasan2022_RLmeetsGNN,
+title = {{Deep reinforcement learning meets graph neural networks: Exploring a routing optimization use case}},
+journal = {Computer Communications},
+volume = {196},
+pages = {184-194},
+year = {2022},
+issn = {0140-3664},
+doi = {https://doi.org/10.1016/j.comcom.2022.09.029},
+url = {https://www.sciencedirect.com/science/article/pii/S0140366422003784},
+author = {Paul Almasan and José Suárez-Varela and Krzysztof Rusek and Pere Barlet-Ros and Albert Cabellos-Aparicio},
+keywords = {Graph neural networks, Deep reinforcement learning, Routing, Optimization},
+abstract = {Deep Reinforcement Learning (DRL) has shown a dramatic improvement in decision-making and automated control problems. Consequently, DRL represents a promising technique to efficiently solve many relevant optimization problems (e.g., routing) in self-driving networks. However, existing DRL-based solutions applied to networking fail to generalize, which means that they are not able to operate properly when applied to network topologies not observed during training. This lack of generalization capability significantly hinders the deployment of DRL technologies in production networks. This is because state-of-the-art DRL-based networking solutions use standard neural networks (e.g., fully connected, convolutional), which are not suited to learn from information structured as graphs. In this paper, we integrate Graph Neural Networks (GNN) into DRL agents and we design a problem specific action space to enable generalization. GNNs are Deep Learning models inherently designed to generalize over graphs of different sizes and structures. This allows the proposed GNN-based DRL agent to learn and generalize over arbitrary network topologies. We test our DRL+GNN agent in a routing optimization use case in optical networks and evaluate it on 180 and 232 unseen synthetic and real-world network topologies respectively. The results show that the DRL+GNN agent is able to outperform state-of-the-art solutions in topologies never seen during training.}
+}
+
+
+@ARTICLE{Bernardez2023_MAGNNETO_TCCN,
+  author={Bern{\'a}rdez, Guillermo and Su{\'a}rez-Varela, Jos{\'e} and L{\'o}pez, Albert and Shi, Xiang and Xiao, Shihan and Cheng, Xiangle and Barlet-Ros, Pere and Cabellos-Aparicio, Albert},
+  journal={IEEE Transactions on Cognitive Communications and Networking}, 
+  title={{MAGNNETO: A Graph Neural Network-Based Multi-Agent System for Traffic Engineering}}, 
+  year={2023},
+  volume={9},
+  number={2},
+  pages={494-506},
+  keywords={Optimization;Routing;Topology;Proposals;Network topology;Training;Standards;Traffic engineering;routing optimization;multi-agent reinforcement learning;graph neural networks},
+  doi={10.1109/TCCN.2023.3235719}}
+
+
+@ARTICLE{Bhuvanasi2023_ResilientRouting_TNSM,
+  author={Bhavanasi, Sai Shreyas and Pappone, Lorenzo and Esposito, Flavio},
+  journal={IEEE Transactions on Network and Service Management}, 
+  title={{Dealing With Changes: Resilient Routing via Graph Neural Networks and Multi-Agent Deep Reinforcement Learning}}, 
+  year={2023},
+  volume={20},
+  number={3},
+  pages={2283-2294},
+  keywords={Routing;Network topology;Quality of service;Topology;Q-learning;Optimization;Measurement;Routing protocols;machine learning algorithms;reinforcement learning;IP networks;network management},
+  doi={10.1109/TNSM.2023.3287936}}
+
+
+@ARTICLE{Yang2022_GCN_RL_IoTJ,
+  author={Yang, Liu and Wei, Yifei and Yu, F. Richard and Han, Zhu},
+  journal={IEEE Internet of Things Journal}, 
+  title={{Joint Routing and Scheduling Optimization in Time-Sensitive Networks Using Graph-Convolutional-Network-Based Deep Reinforcement Learning}}, 
+  year={2022},
+  volume={9},
+  number={23},
+  pages={23981-23994},
+  keywords={Routing;Scheduling;Optimization;Optimal scheduling;Delays;Heuristic algorithms;Real-time systems;Deep reinforcement learning (DRL);graph convolutional network (GCN);joint routing and scheduling;time-sensitive networking (TSN);worst case end-to-end latency},
+  doi={10.1109/JIOT.2022.3188826}}
+
+
+@ARTICLE{Dong2022_GCN_Slicing_Routing_TCCN,
+  author={Dong, Tianjian and Zhuang, Zirui and Qi, Qi and Wang, Jingyu and Sun, Haifeng and Yu, F. Richard and Sun, Tao and Zhou, Cheng and Liao, Jianxin},
+  journal={IEEE Transactions on Cognitive Communications and Networking}, 
+  title={{Intelligent Joint Network Slicing and Routing via GCN-Powered Multi-Task Deep Reinforcement Learning}}, 
+  year={2022},
+  volume={8},
+  number={2},
+  pages={1269-1286},
+  keywords={Routing;Network slicing;Task analysis;6G mobile communication;Resource management;Reinforcement learning;Neural networks;Network slicing;routing;deep reinforcement learning;graph convolutional network},
+  doi={10.1109/TCCN.2021.3136221}}
+
+
+
+
+%% ====== Related Work §D：条件化机制（4 篇新） ======
+
+
+@inproceedings{Hu2020_HGT,
+author = {Hu, Ziniu and Dong, Yuxiao and Wang, Kuansan and Sun, Yizhou},
+title = {{Heterogeneous Graph Transformer}},
+year = {2020},
+isbn = {9781450370233},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3366423.3380027},
+doi = {10.1145/3366423.3380027},
+abstract = {Recent years have witnessed the emerging success of graph neural networks (GNNs) for modeling structured data. However, most GNNs are designed for homogeneous graphs, in which all nodes and edges belong to the same types, making it infeasible to represent heterogeneous structures. In this paper, we present the Heterogeneous Graph Transformer (HGT) architecture for modeling Web-scale heterogeneous graphs. To model heterogeneity, we design node- and edge-type dependent parameters to characterize the heterogeneous attention over each edge, empowering HGT to maintain dedicated representations for different types of nodes and edges. To handle Web-scale graph data, we design the heterogeneous mini-batch graph sampling algorithm—HGSampling—for efficient and scalable training. Extensive experiments on the Open Academic Graph of 179 million nodes and 2 billion edges show that the proposed HGT model consistently outperforms all the state-of-the-art GNN baselines by 9–21 on various downstream tasks. The dataset and source code of HGT are publicly available at https://github.com/acbull/pyHGT.},
+booktitle = {Proceedings of The Web Conference 2020},
+pages = {2704–2710},
+numpages = {7},
+keywords = {Representation Learning, Heterogeneous Information Networks, Graph Neural Networks, Graph Embedding, Graph Attention},
+location = {Taipei, Taiwan},
+series = {WWW '20}
+}
+
+@inproceedings{Brody2022_GATv2,
+    author    = {Brody, Shaked and Alon, Uri and Yahav, Eran},
+    title     = {{How Attentive are Graph Attention Networks?}},
+    booktitle={International Conference on Learning Representations (ICLR)},
+    year      = {2022}
+
+}
+
+
+

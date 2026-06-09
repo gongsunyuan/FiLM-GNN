@@ -1,0 +1,49 @@
+% ============================================================
+% 单栏版 — 流感知 GNN 的 QoS 约束路由（中文正文，IEEE 数字制引用）
+% 编译: xelatex main_onecol.tex; bibtex main_onecol; xelatex×2
+% 与 main.tex 共用 sections/ 与 related_work.bib，仅版式改为单栏
+% ============================================================
+\documentclass[conference]{IEEEtran}
+
+\usepackage{ctex}              % 中文支持 (xelatex)
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage[ruled,linesnumbered]{algorithm2e}  % 训练流程伪代码
+
+\title{Flow-Aware FiLM-Conditioned GNNs for Differentiated-QoS Online Routing via Deep Reinforcement Learning}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+    Modern backbone networks must simultaneously carry heterogeneous traffic ranging from latency-sensitive mice flows to throughput-hungry elephant flows. Existing online routing heuristics optimize for a single objective and are inherently myopic because they cannot foresee future arrivals; meanwhile, learning-based approaches rarely model how mixed QoS intents dynamically reshape the relevance of the same physical topology. We present a flow-conditional encoder, FiLM-GNN, which injects per-flow QoS intent into every message-passing layer of a Graph Neural Network (GNN) via Feature-wise Linear Modulation (FiLM), causing identical substrate graphs to be embedded differently for heterogeneous flows. Formulating online per-flow routing as a stochastic MDP, we train the policy with PPO. Extensive experiments on the GEANT topology show that FiLM-GNN significantly outperforms OSPF, ECMP, CSPF, and OnlineCSPF in cumulative utility, bandwidth satisfaction ratio, and end-to-end latency. Ablation studies confirm the necessity of FiLM conditioning and its operator-agnostic gains; interpretability analyses further verify that the policy causally splits routing decisions based on flow intent.
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+强化学习, 图神经网络, QoS 路由, 特征级线性调制, 流量工程
+\end{IEEEkeywords}
+
+% ===== 章节（与 main.tex 共用同一批 section 文件） =====
+\input{sections/01_intro.tex}
+\input{sections/02_related.tex}
+\input{sections/03_problem.tex}
+\input{sections/05_method.tex}
+\input{sections/06_experiments.tex}
+% \input{sections/07_conclusion.tex}
+
+\bibliographystyle{IEEEtran}
+\bibliography{related_work}
+
+\end{document}
+流感知图神经网络 — 会议论文依赖: ctex (中文), IEEEtran 文档类conference%
+  {../experiments/p4_calibration/figures/pdf/}%
+  {../experiments/p6_interpretability/figures/pdf/}%
+  
+% IEEEtran 下中文标题/作者按会议结构，本轮：问题定义 / 方法（含MDP建模）/ 实验% % 

@@ -1,0 +1,418 @@
+%Intro
+% 经典 QoS 路由与流量工程
+@ARTICLE{Wang1996_QoSRouting,
+  author={Zheng Wang and Crowcroft, J.},
+  journal={IEEE Journal on Selected Areas in Communications}, 
+  title={{Quality-of-service routing for supporting multimedia applications}}, 
+  year={1996},
+  volume={14},
+  number={7},
+  pages={1228-1234},
+  keywords={Quality of service;Routing protocols;Computer networks;Bandwidth;Costs;Computer architecture;Admission control;Scheduling algorithm;Delay;Scalability},
+  doi={10.1109/49.536364}}
+
+
+@INPROCEEDINGS{Fortz2000_TrafficEngineering,
+  author={Fortz, B. and Thorup, M.},
+  booktitle={Proceedings IEEE INFOCOM 2000. Conference on Computer Communications. Nineteenth Annual Joint Conference of the IEEE Computer and Communications Societies (Cat. No.00CH37064)}, 
+  title={{Internet traffic engineering by optimizing OSPF weights}}, 
+  year={2000},
+  volume={2},
+  number={},
+  pages={519-528 vol.2},
+  keywords={Telecommunication traffic;Web and internet services;Spine;Multiprotocol label switching;Throughput;Traffic control;Laboratories;Routing protocols;Load management;Testing},
+  doi={10.1109/INFCOM.2000.832225}}
+
+
+% 学习驱动路由（RL + GNN）
+
+@inproceedings{Valadarsky2017_LearningToRoute,
+author = {Valadarsky, Asaf and Schapira, Michael and Shahaf, Dafna and Tamar, Aviv},
+title = {{Learning to Route}},
+year = {2017},
+isbn = {9781450355698},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3152434.3152441},
+doi = {10.1145/3152434.3152441},
+abstract = {Recently, much attention has been devoted to the question of whether/when traditional network protocol design, which relies on the application of algorithmic insights by human experts, can be replaced by a data-driven (i.e., machine learning) approach. We explore this question in the context of the arguably most fundamental networking task: routing. Can ideas and techniques from machine learning (ML) be leveraged to automatically generate "good" routing configurations? We focus on the classical setting of intradomain traffic engineering. We observe that this context poses significant challenges for data-driven protocol design. Our preliminary results regarding the power of data-driven routing suggest that applying ML (specifically, deep reinforcement learning) to this context yields high performance and is a promising direction for further research. We outline a research agenda for ML-guided routing.},
+booktitle = {Proceedings of the 16th ACM Workshop on Hot Topics in Networks},
+pages = {185–191},
+numpages = {7},
+location = {Palo Alto, CA, USA},
+series = {HotNets '17}
+}
+
+@inproceedings{Stampa2017_DRL_Routing,
+    author    = {Stampa, Guillaume and Arias, M{\'o}nica and S{\'a}nchez-Charles, David and Mu{\~n}oz, V{\'i}ctor and Sol{\'e}-Pareta, Josep},
+    title     = {A Deep-Reinforcement-Learning Approach for Software-Defined Networking Routing Optimization},
+    booktitle = {Proc. IEEE ICMLA},
+    pages     = {86--91},
+    year      = {2017}
+}
+
+% RouteNet 系列
+@inproceedings{Rusek2020_SOSR_RouteNet,
+author = {Rusek, Krzysztof and Su\'{a}rez-Varela, Jos\'{e} and Mestres, Albert and Barlet-Ros, Pere and Cabellos-Aparicio, Albert},
+title = {{Unveiling the potential of Graph Neural Networks for network modeling and optimization in SDN}},
+year = {2019},
+isbn = {9781450367103},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3314148.3314357},
+doi = {10.1145/3314148.3314357},
+abstract = {Network modeling is a critical component for building self-driving Software-Defined Networks, particularly to find optimal routing schemes that meet the goals set by administrators. However, existing modeling techniques do not meet the requirements to provide accurate estimations of relevant performance metrics such as delay and jitter. In this paper we propose a novel Graph Neural Network (GNN) model able to understand the complex relationship between topology, routing and input traffic to produce accurate estimates of the per-source/destination pair mean delay and jitter. GNN are tailored to learn and model information structured as graphs and as a result, our model is able to generalize over arbitrary topologies, routing schemes and variable traffic intensity. In the paper we show that our model provides accurate estimates of delay and jitter (worst case R2 = 0.86) when testing against topologies, routing and traffic not seen during training. In addition, we present the potential of the model for network operation by presenting several use-cases that show its effective use in per-source/destination pair delay/jitter routing optimization and its generalization capabilities by reasoning in topologies and routing schemes not seen during training.},
+booktitle = {Proceedings of the 2019 ACM Symposium on SDN Research},
+pages = {140–151},
+numpages = {12},
+keywords = {network optimization, network modeling, SDN, Graph Neural Networks},
+location = {San Jose, CA, USA},
+series = {SOSR '19}
+}
+
+
+% 条件化网络 / FiLM
+@inproceedings{Perez2018_FiLM,
+author = {Perez, Ethan and Strub, Florian and de Vries, Harm and Dumoulin, Vincent and Courville, Aaron},
+title = {{FiLM: visual reasoning with a general conditioning layer}},
+year = {2018},
+isbn = {978-1-57735-800-8},
+publisher = {AAAI Press},
+abstract = {We introduce a general-purpose conditioning method for neural networks called FiLM: Feature-wise Linear Modulation. FiLM layers influence neural network computation via a simple, feature-wise affine transformation based on conditioning information. We show that FiLM layers are highly effective for visual reasoning — answering image-related questions which require a multi-step, high-level process — a task which has proven difficult for standard deep learning methods that do not explicitly model reasoning. Specifically, we show on visual reasoning tasks that FiLM layers 1) halve state-of-the-art error for the CLEVR benchmark, 2) modulate features in a coherent manner, 3) are robust to ablations and architectural modifications, and 4) generalize well to challenging, new data from few examples or even zero-shot.},
+booktitle = {Proceedings of the Thirty-Second AAAI Conference on Artificial Intelligence and Thirtieth Innovative Applications of Artificial Intelligence Conference and Eighth AAAI Symposium on Educational Advances in Artificial Intelligence},
+articleno = {483},
+numpages = {10},
+location = {New Orleans, Louisiana, USA},
+series = {AAAI'18/IAAI'18/EAAI'18}
+}
+
+
+% 可选：互联网流量统计报告（用于引言首句）
+@misc{CISCO2023_GlobalTraffic,
+    title  = {{Cisco Annual Internet Report (2018--2023)}},
+    author = {{Cisco}},
+    year   = {2020},
+    howpublished = {\url{https://www.cisco.com/c/en/us/solutions/collateral/executive-perspectives/annual-internet-report/white-paper-c11-741490.html}}
+}
+
+
+
+
+% ============================================================
+% Related Work — 流级 QoS 感知网络路由 (2023–2026)
+% P4 实验 FiLM-GNN 编码器相关工作引用
+% 汇总: 2026-05-30
+% ============================================================
+@article{Farooq2022_TE_Survey,
+    author  = {Farooq, Muhammad and Gharakheili, Hassan H. and Sivaraman, Vijay},
+    title   = {A Comprehensive Survey on Traffic Engineering in Software Defined Networks: Past, Present and Future},
+    journal = {IEEE Communications Surveys \& Tutorials},
+    volume  = {24},
+    number  = {3},
+    pages   = {1562--1591},
+    year    = {2022},
+    doi     = {10.1109/COMST.2022.3181212}
+}
+
+% ---------- 角度 1: DRL/PPO 做 QoS 感知路由 ----------
+@article{Ye2021_DRL_MultiObjective_CN,
+    author  = {Ye, Yanjie and Guo, Zehua and Hu, Yuxiang and Wang, Ying},
+    title   = {Deep Reinforcement Learning for Multi-Objective Routing Optimization in Software-Defined Networks},
+    journal = {Computer Networks},
+    volume  = {198},
+    pages   = {108414},
+    year    = {2021}
+}
+
+@article{Yu2022_DRL_DynamicRouting_TNSE,
+    author  = {Yu, Chao and Lan, Jialin and Guo, Zehua and Hu, Yuxiang},
+    title   = {Deep Reinforcement Learning for Dynamic Network Routing},
+    journal = {IEEE Transactions on Network Science and Engineering},
+    volume  = {9},
+    number  = {3},
+    pages   = {1270--1282},
+    year    = {2022}
+}
+
+@article{Chen2022_IntelligentRouting_TNSE,
+    author  = {Chen, Min and Liang, Weifa and Hu, Xiao and Li, Keqiu},
+    title   = {Intelligent Routing Based on Deep Reinforcement Learning in Software-Defined Data Center Networks},
+    journal = {IEEE Transactions on Network Science and Engineering},
+    volume  = {9},
+    number  = {4},
+    pages   = {2183--2196},
+    year    = {2022}
+}
+
+@article{Wang2023_QoS_DRL_CN,
+    author  = {Wang, Xiang and Cao, Jian and Qu, Zhiguo and Sun, Qiang},
+    title   = {Deep Reinforcement Learning for {QoS}-Aware Routing in Software-Defined Networks},
+    journal = {Computer Networks},
+    volume  = {224},
+    pages   = {109629},
+    year    = {2023}
+}
+
+@article{Xu2023_DRL_TE_Survey,
+    author  = {Xu, Zhiheng and Tang, Jian and Meng, Xiangyu and Wang, Yanzhi and Guo, Zehua and Hu, Yuxiang and Wang, Ying},
+    title   = {Deep Reinforcement Learning for Traffic Engineering: {A} Survey and New Perspectives},
+    journal = {IEEE Communications Surveys \& Tutorials},
+    volume  = {25},
+    number  = {4},
+    pages   = {2094--2128},
+    year    = {2023}
+}
+% ① RtDG (方案名)。头号相关工作: PPO+KL penalty + GNN, 音视频混合流 QoS 路由, ONOS/Mininet
+@ARTICLE{Wang_2025_RtDG,
+  author={Wang, Haoying and Liu, Zhan and Wang, Hongchao and Zhang, Weiting and Yang, Dong},
+  journal={IEEE Internet of Things Journal}, 
+  title={{Intelligent and Reliable Routing for Audio/Video Mixed Traffic in Overlay Networks}}, 
+  year={2025},
+  volume={12},
+  number={9},
+  pages={12341-12354},
+  keywords={Routing;Quality of service;Overlay networks;Reliability;Delays;Packet loss;Optimization;Monitoring;Network topology;Servers;Audio/video traffic;deep reinforcement learning (DRL);graph neural networks (GNNs);intelligent reliable routing;overlay network},
+  doi={10.1109/JIOT.2024.3521088}}
+
+
+% ② MA-TAC: 多智能体 twin-actor-critic + PPO, QoS 多路径路由
+@ARTICLE{Xiao_2024_MATAC,
+  author={Xiao, Yang and Yang, Ying and Yu, Huihan and Liu, Jun},
+  journal={IEEE Transactions on Mobile Computing}, 
+  title={{Scalable QoS-Aware Multipath Routing in Hybrid Knowledge-Defined Networking With Multiagent Deep Reinforcement Learning}}, 
+  year={2024},
+  volume={23},
+  number={11},
+  pages={10628-10646},
+  keywords={Routing;Quality of service;Scalability;Optimization;Computer architecture;Mobile computing;Collaboration;Multiagent deep reinforcement learning;traffic engineering;multipath routing;knowledge-defined networking},
+  doi={10.1109/TMC.2024.3379191}}
+
+
+% ③ Autonomous Flow Routing: DRL(TD3)+MAS, 分布式/仅时延
+@ARTICLE{Barzegar_2024_AFR,
+  author={Barzegar, Sima and Ruiz, Marc and Velasco, Luis},
+  journal={IEEE Transactions on Network and Service Management}, 
+  title={{Autonomous Flow Routing for Near Real-Time Quality of Service Assurance}}, 
+  year={2024},
+  volume={21},
+  number={2},
+  pages={2504-2514},
+  keywords={Routing;Delays;Quality of service;Real-time systems;Decision making;Costs;Time factors;Quality of Service assurance;flow routing;network automation;near-real-time control;deep reinforcement learning;multi-agent systems},
+  doi={10.1109/TNSM.2023.3339201}}
+
+
+% ④ RT-TE: DRL + 分布式消息传递 TE, 多目标 MLU+delay。BUPT
+@INPROCEEDINGS{Wang_2024_RTTE,
+  author={Wang, Zicheng and Zhuang, Zirui and Wang, Jingyu and Qi, Qi and Sun, Haifeng and Liao, Jianxin},
+  booktitle={2024 IEEE International Parallel and Distributed Processing Symposium (IPDPS)}, 
+  title={{Fast Policy Convergence for Traffic Engineering with Proactive Distributed Message-Passing}}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={780-790},
+  keywords={Training;Computational modeling;Telecommunication traffic;Quality of service;Routing;Data models;Real-time systems;traffic engineering;distributed networked system;deep reinforcement learning;message passing graph neural network},
+  doi={10.1109/IPDPS57955.2024.00074}}
+
+
+% ---------- 角度 2: GNN 做路由 / 流量工程 ----------
+
+% ⑤ RouteNet-Fermi: GNN 网络性能预测器 (delay/jitter/loss)
+@article{FerriolGalmes_2023_RouteNetFermi,
+author = {Ferriol-Galm\'{e}s, Miquel and Paillisse, Jordi and Su\'{a}rez-Varela, Jos\'{e} and Rusek, Krzysztof and Xiao, Shihan and Shi, Xiang and Cheng, Xiangle and Barlet-Ros, Pere and Cabellos-Aparicio, Albert},
+title = {{RouteNet-Fermi: Network Modeling With Graph Neural Networks}},
+year = {2023},
+issue_date = {Dec. 2023},
+publisher = {IEEE Press},
+volume = {31},
+number = {6},
+issn = {1063-6692},
+url = {https://doi.org/10.1109/TNET.2023.3269983},
+doi = {10.1109/TNET.2023.3269983},
+abstract = {Network models are an essential block of modern networks. For example, they are widely used in network planning and optimization. However, as networks increase in scale and complexity, some models present limitations, such as the assumption of Markovian traffic in queuing theory models, or the high computational cost of network simulators. Recent advances in machine learning, such as Graph Neural Networks (GNN), are enabling a new generation of network models that are data-driven and can learn complex non-linear behaviors. In this paper, we present RouteNet-Fermi, a custom GNN model that shares the same goals as Queuing Theory, while being considerably more accurate in the presence of realistic traffic models. The proposed model predicts accurately the delay, jitter, and packet loss of a network. We have tested RouteNet-Fermi in networks of increasing size (up to 300 nodes), including samples with mixed traffic profiles — e.g., with complex non-Markovian models — and arbitrary routing and queue scheduling configurations. Our experimental results show that RouteNet-Fermi achieves similar accuracy as computationally-expensive packet-level simulators and scales accurately to larger networks. Our model produces delay estimates with a mean relative error of 6.24% when applied to a test dataset of 1,000 samples, including network topologies one order of magnitude larger than those seen during training. Finally, we have also evaluated RouteNet-Fermi with measurements from a physical testbed and packet traces from a real-life network.},
+journal = {IEEE/ACM Trans. Netw.},
+month = may,
+pages = {3080–3095},
+numpages = {16}
+}
+
+% ⑥ GROM: DRL+GNN 跨拓扑免重训路由, 动作空间离散化
+
+@article{Ding_2024_GROM,
+title = {{GROM: A generalized routing optimization method with graph neural network and deep reinforcement learning}},
+journal = {Journal of Network and Computer Applications},
+volume = {229},
+pages = {103927},
+year = {2024},
+issn = {1084-8045},
+doi = {https://doi.org/10.1016/j.jnca.2024.103927},
+url = {https://www.sciencedirect.com/science/article/pii/S1084804524001048},
+author = {Mingjie Ding and Yingya Guo and Zebo Huang and Bin Lin and Huan Luo},
+keywords = {Traffic engineering, Graph neural networks, Reinforcement learning, Software-defined networks},
+abstract = {Routing optimization, as a significant part of Traffic Engineering (TE), plays an important role in balancing network traffic and improving quality of service. With the application of Machine Learning (ML) in various fields, many neural network-based routing optimization solutions have been proposed. However, most existing ML-based methods need to retrain the model when confronted with a network unseen during training, which incurs significant time overhead and response delay. To improve the generalization ability of the routing model, in this paper, we innovatively propose a routing optimization method GROM which combines Deep Reinforcement Learning (DRL) and Graph Neural Networks (GNN), to directly generate routing policies under different and unseen network topologies without retraining. Specifically, for handling different network topologies, we transform the traffic-splitting ratio into element-level output of GNN model. To make the DRL agent easier to converge and well generalize to unseen topologies, we discretize the huge continuous traffic-splitting action space. Extensive simulation results on five real-world network topologies demonstrate that GROM can rapidly generate routing policies under different network topologies and has superior generalization ability.}
+}
+
+% ⑦ MAFRO (方案名): GNN + 多智能体 DRL, flowlet 级选路。一作 Zhang Lianming
+
+@inproceedings{Zhang_2023_MAFRO,
+  title={{Flowlet-Level Routing Optimization with GNN-Based Multi-Agent Deep Reinforcement Learning}},
+  author={Lianming Zhang and Haoran Cheng and Shuqiang Peng and Pingping Dong},
+  booktitle={GLOBECOM 2023 - 2023 IEEE Global Communications Conference},
+  year={2023},
+  pages={5214-5219},
+  url={https://api.semanticscholar.org/CorpusID:268036026}
+}
+
+% ⑧ 3DQR: 分层 GNN 多智能体 DRL (Dueling DQN), 3D 网络 QoS TE
+% ====== GNN for Networking / Routing (2021-2024) ======
+@article{Almasan2022_RLmeetsGNN_CN,
+title = {{Deep reinforcement learning meets graph neural networks: Exploring a routing optimization use case}},
+journal = {Computer Communications},
+volume = {196},
+pages = {184-194},
+year = {2022},
+issn = {0140-3664},
+doi = {https://doi.org/10.1016/j.comcom.2022.09.029},
+url = {https://www.sciencedirect.com/science/article/pii/S0140366422003784},
+author = {Paul Almasan and José Suárez-Varela and Krzysztof Rusek and Pere Barlet-Ros and Albert Cabellos-Aparicio},
+keywords = {Graph neural networks, Deep reinforcement learning, Routing, Optimization},
+abstract = {Deep Reinforcement Learning (DRL) has shown a dramatic improvement in decision-making and automated control problems. Consequently, DRL represents a promising technique to efficiently solve many relevant optimization problems (e.g., routing) in self-driving networks. However, existing DRL-based solutions applied to networking fail to generalize, which means that they are not able to operate properly when applied to network topologies not observed during training. This lack of generalization capability significantly hinders the deployment of DRL technologies in production networks. This is because state-of-the-art DRL-based networking solutions use standard neural networks (e.g., fully connected, convolutional), which are not suited to learn from information structured as graphs. In this paper, we integrate Graph Neural Networks (GNN) into DRL agents and we design a problem specific action space to enable generalization. GNNs are Deep Learning models inherently designed to generalize over graphs of different sizes and structures. This allows the proposed GNN-based DRL agent to learn and generalize over arbitrary network topologies. We test our DRL+GNN agent in a routing optimization use case in optical networks and evaluate it on 180 and 232 unseen synthetic and real-world network topologies respectively. The results show that the DRL+GNN agent is able to outperform state-of-the-art solutions in topologies never seen during training.}
+}
+
+
+@article{FerriolGalmes2023_RouteNetFermi,
+author = {Ferriol-Galm\'{e}s, Miquel and Paillisse, Jordi and Su\'{a}rez-Varela, Jos\'{e} and Rusek, Krzysztof and Xiao, Shihan and Shi, Xiang and Cheng, Xiangle and Barlet-Ros, Pere and Cabellos-Aparicio, Albert},
+title = {{RouteNet-Fermi: Network Modeling With Graph Neural Networks}},
+year = {2023},
+issue_date = {Dec. 2023},
+publisher = {IEEE Press},
+volume = {31},
+number = {6},
+issn = {1063-6692},
+url = {https://doi.org/10.1109/TNET.2023.3269983},
+doi = {10.1109/TNET.2023.3269983},
+abstract = {Network models are an essential block of modern networks. For example, they are widely used in network planning and optimization. However, as networks increase in scale and complexity, some models present limitations, such as the assumption of Markovian traffic in queuing theory models, or the high computational cost of network simulators. Recent advances in machine learning, such as Graph Neural Networks (GNN), are enabling a new generation of network models that are data-driven and can learn complex non-linear behaviors. In this paper, we present RouteNet-Fermi, a custom GNN model that shares the same goals as Queuing Theory, while being considerably more accurate in the presence of realistic traffic models. The proposed model predicts accurately the delay, jitter, and packet loss of a network. We have tested RouteNet-Fermi in networks of increasing size (up to 300 nodes), including samples with mixed traffic profiles — e.g., with complex non-Markovian models — and arbitrary routing and queue scheduling configurations. Our experimental results show that RouteNet-Fermi achieves similar accuracy as computationally-expensive packet-level simulators and scales accurately to larger networks. Our model produces delay estimates with a mean relative error of 6.24% when applied to a test dataset of 1,000 samples, including network topologies one order of magnitude larger than those seen during training. Finally, we have also evaluated RouteNet-Fermi with measurements from a physical testbed and packet traces from a real-life network.},
+journal = {IEEE/ACM Trans. Netw.},
+month = may,
+pages = {3080–3095},
+numpages = {16}
+}
+
+
+
+@article{Zhang2024_ML_TE_Survey,
+    author  = {Zhang, Chong and Li, Zhenhua and Hu, Chenfei and Liu, Yong},
+    title   = {Machine Learning for Internet Traffic Engineering: {A} Survey},
+    journal = {IEEE Communications Surveys \& Tutorials},
+    volume  = {26},
+    number  = {2},
+    pages   = {1096--1138},
+    year    = {2024}
+}
+
+% ---------- 角度 3: FiLM / 条件化 GNN + 意图驱动网络 ----------
+
+% ⑨ GNN-FiLM: 方法学引用根。γ/β 来自目标节点表示
+@InProceedings{Brockschmidt_2020_GNNFiLM,
+  title = {{{GNN}-{F}i{LM}: Graph Neural Networks with Feature-wise Linear Modulation}},
+  author =  {Brockschmidt, Marc},
+  booktitle = {Proceedings of the 37th International Conference on Machine Learning},
+  pages = {1144--1152},
+  year = 	 {2020},
+  editor = {III, Hal Daumé and Singh, Aarti},
+  volume = 	 {119},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {13--18 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v119/brockschmidt20a/brockschmidt20a.pdf},
+  url = 	 {https://proceedings.mlr.press/v119/brockschmidt20a.html},
+  abstract = 	 {This paper presents a new Graph Neural Network (GNN) type using feature-wise linear modulation (FiLM). Many standard GNN variants propagate information along the edges of a graph by computing messages based only on the representation of the source of each edge. In GNN-FiLM, the representation of the target node of an edge is used to compute a transformation that can be applied to all incoming messages, allowing feature-wise modulation of the passed information. Different GNN architectures are compared in extensive experiments on three tasks from the literature, using re-implementations of many baseline methods. Hyperparameters for all methods were found using extensive search, yielding somewhat surprising results: differences between state of the art models are much smaller than reported in the literature and well-known simple baselines that are often not compared to perform better than recently proposed GNN variants. Nonetheless, GNN-FiLM outperforms these methods on a regression task on molecular graphs and performs competitively on other tasks.}
+}
+
+% ⑩ IBN path-selection: GNN + DDPG, 意图驱动路径选择
+@article{Alam_2024_IBN,
+author = {Alam, Sajid and Diaz Rivera, Javier Jose and Sarwar, Mir Muhammad Suleman and Muhammad, Afaq and Song, Wang-Cheol},
+title = {{Assuring Efficient Path Selection in an Intent-Based Networking System: A Graph Neural Networks and Deep Reinforcement Learning Approach}},
+year = {2024},
+issue_date = {Apr 2024},
+publisher = {Plenum Press},
+address = {USA},
+volume = {32},
+number = {2},
+issn = {1064-7570},
+url = {https://doi.org/10.1007/s10922-024-09814-y},
+doi = {10.1007/s10922-024-09814-y},
+abstract = {The recent advancements in network systems, including Software-Defined Networking (SDN), Network Functions Virtualization (NFV), and cloud networking, have significantly enhanced network management. These technologies increase efficiency, reduce manual efforts, and improve agility in deploying new services. They also enable scalable network resources, facilitate handling demand surges, and provide efficient access to innovative solutions. Despite these advancements, the performance of interconnected nodes is still influenced by the heterogeneity of network infrastructure and the capabilities of physical links. This work introduces a comprehensive solution addressing these challenges through Intent-Based Networking (IBN). Our approach utilizes IBN for defining high-level service requirements (QoS) tailored to individual node specifications. Further, we integrate a Graph Neural Network (GNN) to model the network’s overlay topology and understand the behavior of nodes and links. This integration enables the translation of defined intents into optimal paths between end-to-end nodes, ensuring efficient path selection. Additionally, our system incorporates Deep Deterministic Policy Gradients (DDPG) for dynamic weight calculation of QoS metrics to adjust the link cost assigned to network paths based on performance metrics, ensuring the network adapts to the specified QoS intents. The proposed solution has been implemented as an IBN system design comprising an intent definition manager, a GNN model for optimal path selection, an Off-Platform Application (OPA) for policy creation, an assurance module consisting of the DDPG mechanism, and a real-time monitoring system. This design ensures continuous efficient path selection assurance, dynamically adapting to changing conditions and maintaining optimal service levels per the defined intents.},
+journal = {J. Netw. Syst. Manage.},
+month = apr,
+numpages = {25},
+keywords = {DRL, IBN, Network automation, SDN, Assurance}
+}
+
+% ---------- 角度 4: 大象流/老鼠流区分与差异化 QoS ----------
+
+% ⑪ MDQ: QoS-拥塞感知 DRL 多路径路由 + 老鼠/大象流分类器 (99.29%)
+@article{AguirreSanchez_2025_MDQ,
+title = {{MDQ: A QoS-Congestion Aware Deep Reinforcement Learning Approach for Multi-Path Routing in SDN}},
+journal = {Journal of Network and Computer Applications},
+volume = {235},
+pages = {104082},
+year = {2025},
+issn = {1084-8045},
+doi = {https://doi.org/10.1016/j.jnca.2024.104082},
+url = {https://www.sciencedirect.com/science/article/pii/S1084804524002595},
+author = {Lizeth Patricia {Aguirre Sanchez} and Yao Shen and Minyi Guo},
+keywords = {Optimization routing, Load balancing, QoS, Congestion, Deep reinforcement learning, SDN},
+abstract = {The challenge of link overutilization in networking persists, prompting the development of load-balancing methods such as multi-path strategies and flow rerouting. However, traditional rule-based heuristics struggle to adapt dynamically to network changes. This leads to complex models and lengthy convergence times, unsuitable for diverse QoS demands, particularly in time-sensitive applications. Existing routing approaches often result in specific types of traffic overloading links or general congestion, prolonged convergence delays, and scalability challenges. To tackle these issues, we propose a QoS-Congestion Aware Deep Reinforcement Learning Approach for Multi-Path Routing in Software-Defined Networking (MDQ). Leveraging Deep Reinforcement Learning, MDQ intelligently selects optimal multi-paths and allocates traffic based on flow needs. We design a multi-objective function using a combination of link and queue metrics to establish an efficient routing policy. Moreover, we integrate a congestion severity index into the learning process and incorporate a traffic classification phase to handle mice-elephant flows, ensuring that diverse class-of-service requirements are adequately addressed. Through an RYU-Docker-based Openflow framework integrating a Live QoS Monitor, DNC Classifier, and Online Routing, results demonstrate a 19%–22% reduction in delay compared to state-of-the-art algorithms, exhibiting robust reliability across diverse scenarios of network dynamics.}
+}
+
+% ⑫ DQS: QoS 驱动 DRL 路由 + 七参数流分类器, 差异化 CoS
+@article{AguirreSanchez_2024_DQS,
+title = {{DQS: A QoS-driven routing optimization approach in SDN using deep reinforcement learning}},
+journal = {Journal of Parallel and Distributed Computing},
+volume = {188},
+pages = {104851},
+year = {2024},
+issn = {0743-7315},
+doi = {https://doi.org/10.1016/j.jpdc.2024.104851},
+url = {https://www.sciencedirect.com/science/article/pii/S0743731524000157},
+author = {Lizeth Patricia {Aguirre Sanchez} and Yao Shen and Minyi Guo},
+keywords = {Optimization routing, QoS, Deep reinforcement learning, SDN},
+abstract = {In recent decades, the exponential growth of applications has intensified traffic demands, posing challenges in ensuring optimal user experiences within modern networks. Traditional congestion avoidance and control mechanisms embedded in conventional routing struggle to promptly adapt to new-generation networks. Current routing approaches risk-averse outcomes such as (1) scalability constraints, (2) high convergence times, and (3) congestion due to inadequate real-time traffic prioritization. To address these issues, this paper introduces a QoS-Driven Routing Optimization in Software-Defined Networking (SDN) using Deep Reinforcement Learning (DRL) to optimize routing and enhance QoS efficiency. Employing DRL, the proposed DQS optimizes routing decisions by intelligently distributing traffic, guided by a multi-objective function-driven DRL agent that considers both link and queue metrics. Despite the complexity of the network, DQS sustains scalability while significantly reducing convergence times. Through a Docker-based Openflow prototype, results highlight a substantial 20-30\% reduction in end-to-end delay compared to baseline methods.}
+}
+
+% ---------- 角度 5: 图注意力算子 ----------
+
+% TransformerConv / UniMP: 统一消息传递模型，点积注意力 (TransformerConv 的出处)
+@inproceedings{Shi2021_UniMP,
+  title     = {{Masked Label Prediction: Unified Message Passing Model for Semi-Supervised Classification}},
+  author    = {Shi, Yunsheng and Huang, Zhengjie and Feng, Shikun and Zhong, Hui and Wang, Wenjin and Sun, Yu},
+  booktitle = {Proceedings of the Thirtieth International Joint Conference on Artificial Intelligence},
+  year      = {2021},
+  url       = {https://arxiv.org/abs/2009.03509}
+}
+
+
+% GATv2: 动态加性注意力，修复 GAT 的静态注意力问题
+@inproceedings{Brody2022_GATv2,
+  title     = {{How Attentive are Graph Attention Networks?}},
+  author    = {Brody, Shaked and Alon, Uri and Yahav, Eran},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2022},
+  url       = {https://openreview.net/forum?id=F72ximsx7C1}
+}
+
+% ---------- 角度 6 补充 (定向检索新增, 待核实) ----------
+
+% HARP: 神经 WAN TE 代理 (GNN + set transformers), 跨拓扑泛化。无 FiLM 无 RL
+@inproceedings{AlQiam_2024_HARP,
+  title={Transferable Neural WAN TE for Changing Topologies},
+  url={http://dx.doi.org/10.1145/3651890.3672237},
+  DOI={10.1145/3651890.3672237},
+  booktitle={Proceedings of the ACM SIGCOMM 2024 Conference (ACM SIGCOMM '24)},
+  publisher={ACM},
+  address={Sydney, NSW, Australia},
+  author={AlQiam, Abd AlRhman and Yao, Yuanjun and Wang, Zhaodong and Ahuja, Satyajeet Singh and Zhang, Ying and Rao, Sanjay G. and Ribeiro, Bruno and Tawarmalani, Mohit},
+  year={2024},
+  month=Aug,
+  numpages={17}
+}

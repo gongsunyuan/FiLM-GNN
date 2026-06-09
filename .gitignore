@@ -1,0 +1,31 @@
+# LaTeX 编译产物（但不忽略 figures 目录的图片）
+*.aux
+*.bbl
+*.blg
+*.log
+*.synctex.gz
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+
+# 论文 PDF 编译产物（但保留 figures 里的图）
+main.pdf
+main_onecol.pdf
+
+# 临时/系统文件
+CLAUDE.md
+to do.md
+SYSTEM.md
+
+# IDE / 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
