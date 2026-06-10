@@ -19,8 +19,10 @@ main_onecol.pdf
 CLAUDE.md
 to do.md
 SYSTEM.md
+merge/
 
 # IDE / 编辑器
+# 
 .vscode/
 .idea/
 *.swp
@@ -29,3 +31,4 @@ SYSTEM.md
 
 # macOS
 .DS_Store
+.pi/

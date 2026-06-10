@@ -4,7 +4,7 @@
 \subsection{实验设置}
 \label{sec:exp:setup}
 
-\textbf{拓扑与流量。} 主实验在 GEANT 骨干网拓扑（$22$ 节点、$36$ 条链路）上进行。为训练能泛化到不同网络状态的策略，每个 episode 开始时重新随机生成全部链路属性：带宽从 $\text{Uniform}[30,100]$ 采样、时延从 $\text{Uniform}[1,20]$ 采样。流量生成以 QoS 意图 $\phi$ 为主导变量：$\phi$ 由 Pareto 翻转分布（$\alpha\!=\!0.2$）生成，使绝大部分流集中于低 $\phi$ 区间（即带宽与延迟约束严格的老鼠流），仅少量流为高 $\phi$（约束宽松的大象流）。带宽需求 $b$ 由 $\phi$ 通过正相关线性映射导出：$b = b_{\text{floor}} + (b_{\text{max}}-b_{\text{floor}})\cdot\phi + \mathcal{N}(0,\sigma)$，其中 $b_{\text{max}}\!=\!40$，高斯噪声标准差为跨度的 $0.15$ 倍，使 $\phi$ 与 $b$ 保持强正相关（Pearson $r\!\approx\!0.90$）但非完全确定——$\phi$ 仍携带 $b$ 之外的独立信息。
+\textbf{拓扑与流量。} 主实验在 GEANT 骨干网拓扑（$22$ 节点、$36$ 条链路）上进行。为训练能泛化到不同网络状态的策略，每个 episode 开始时重新随机生成全部链路属性：带宽从 $\text{Uniform}[30,100]$ 采样、时延从 $\text{Uniform}[1,20]$ 采样。流量生成以 QoS 意图 $\phi$ 为主导变量：$\phi$ 由 Pareto 翻转分布（$\alpha\!=\!0.2$）生成，使绝大部分流集中于低 $\phi$ 区间（即带宽与延迟约束严格的老鼠流），仅少量流为高 $\phi$（约束宽松的大象流）。带宽需求 $b$ 由 $\phi$ 通过正相关线性映射导出（式~\eqref{eq:bw_gen}），其中 $b_{\text{max}}\!=\!40$，高斯噪声标准差为跨度的 $0.15$ 倍，使 $\phi$ 与 $b$ 保持强正相关（Pearson $r\!\approx\!0.90$）但非完全确定——$\phi$ 仍携带 $b$ 之外的独立信息。
 
 \textbf{序列长度。} 每个 episode 包含 $W=150$ 条流的顺序到达，要求策略在长程信用分配下维持服务质量。随机拓扑与流生成确保 agent 不能死记固定路径，必须根据当前链路状态与每条流的意图做出差异化路由决策。
 
@@ -67,29 +67,9 @@
 
 本节回答第一个核心问题：相比 OSPF、ECMP、CSPF、OnlineCSPF、RANDOM 等经典选路算法，学习型的流感知 FiLM-GNN 能否取得系统性优势，优势来自何处？为隔离"学习型策略 vs 经典算法"这一对比，本节仅将本文方法（FiLM-Tf）与五种经典基线对照；与（noFiLM-Tf）及无消息传递（MLP）变体的消融对比留待第~\ref{sec:exp:repr} 节。
 
-$W\!=\!150$ 下，FiLM-GNN 在平均奖励、带宽满足与时延三项指标上均优于所有经典基线（表~\ref{tab:main_w150}）：其平均奖励 $+0.121$ 较最强经典基线 OnlineCSPF（$-0.046$）提升 $+0.167$，BW Score $0.759$ 较之高出 $+0.117$，平均时延由 $130.0$ 降至 $112.9$ms。注意 CSPF 虽时延最低（$125.9$），但其以牺牲带宽满足（BW Score 仅 $0.473$）为代价，整体奖励反而最低（$-0.208$）——单看时延无法反映服务质量的全局权衡。这一优势在三个拓扑上均成立（图~\ref{fig:main_bars}）：FiLM-Tf 在 GEANT（$+0.121$）、NOBEL-EU（$-0.108$）、ABILENE（$+0.122$）上均优于各自的最强静态基线 OnlineCSPF（分别为 $-0.046$、$-0.183$、$+0.041$），说明流感知表示的优势跨拓扑稳健。
+$W\!=\!150$ 下，FiLM-GNN 在平均奖励、带宽满足与时延三项指标上均优于所有经典基线（图~\ref{fig:main_bars}）：其平均奖励 $+0.121$ 较最强经典基线 OnlineCSPF（$-0.046$）提升 $+0.167$，BW Score $0.759$ 较之高出 $+0.117$，平均时延由 $130.0$ 降至 $112.9$ms。注意 CSPF 虽时延最低（$125.9$），但其以牺牲带宽满足（BW Score 仅 $0.473$）为代价，整体奖励反而最低（$-0.208$）——单看时延无法反映服务质量的全局权衡。这一优势在三个拓扑上均成立（图~\ref{fig:main_bars}）：FiLM-Tf 在 GEANT（$+0.121$）、NOBEL-EU（$-0.108$）、ABILENE（$+0.122$）上均优于各自的最强静态基线 OnlineCSPF（分别为 $-0.046$、$-0.183$、$+0.041$），说明流感知表示的优势跨拓扑稳健。
 
 \textbf{优势来源：非短视的长程资源分配。} 经典算法（含"逐步最优"的 OnlineCSPF）对每条流独立做贪心选路，缺乏对后续流的预留意识；在 $W\!=\!150$ 的长序列下，早到流耗尽关键链路容量，使后到流无路可走。按 $\phi$ 分桶可清晰看到这一点：在低意图桶（$\phi<0.2$，约束最严的老鼠流）上，FiLM-GNN 奖励 $+0.315$ 远超 OnlineCSPF 的 $+0.070$；中意图桶两者趋近，高意图桶所有方法均偏低——这是任务固有的资源稀缺特征。这直接印证了第~\ref{sec:problem:why_rl} 节的论证：路由是带长程信用分配的序贯决策问题，OnlineCSPF 作为"逐步最优"的代表，被学到的非短视策略系统性地超越。
-
-\begin{table}[t]
-\centering
-\caption{主线一：本文方法与经典基线对比（GEANT，$W\!=\!150$，200 ep）。本文方法为 3 个随机种子均值 $\pm$ 标准差，经典基线为确定性算法（单值）。$\uparrow$ 越大越好，$\downarrow$ 越小越好。}
-\label{tab:main_w150}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccc}
-\toprule
-方法 & Mean $R$$\uparrow$ & BW Score$\uparrow$ & Avg Delay$\downarrow$ \\
-\midrule
-\textbf{FiLM-Tf}（本文） & $\mathbf{+0.121{\scriptstyle\pm0.006}}$ & $\mathbf{0.759}$ & $\mathbf{112.9}$ \\
-\midrule
-OnlineCSPF              & $-0.046$          & $0.642$          & $130.0$ \\
-ECMP                    & $-0.138$          & $0.551$          & $154.1$ \\
-OSPF                    & $-0.169$          & $0.524$          & $163.1$ \\
-CSPF                    & $-0.208$          & $0.473$          & $125.9$ \\
-RANDOM                  & $-0.540$          & $0.300$          & $295.5$ \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \begin{figure*}[t]
 \centering
@@ -98,15 +78,23 @@ RANDOM                  & $-0.540$          & $0.300$          & $295.5$ \\
 \includegraphics[width=0.32\textwidth]{p9b_bars_abilene_reward.pdf}\\[2pt]
 \includegraphics[width=0.32\textwidth]{p9b_bars_geant_linear_bw.pdf}\hfill
 \includegraphics[width=0.32\textwidth]{p9b_bars_nobel_eu_bw.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_bars_abilene_bw.pdf}
-\caption{主线一：三个拓扑上的最终性能条形图对比。上行：平均奖励（3 种子均值，误差棒为 $\pm$标准差）；下行：带宽服务率。列从左到右：GEANT（$W\!=\!150$）、NOBEL-EU（$W\!=\!150$）、ABILENE（$W\!=\!50$）。彩色实心为学习型网络变体（本文 FiLM-Tf 高亮），灰色斜纹为静态基线。}
+\includegraphics[width=0.32\textwidth]{p9b_bars_abilene_bw.pdf}\\[2pt]
+\includegraphics[width=0.32\textwidth]{p9b_bars_geant_linear_delay.pdf}\hfill
+\includegraphics[width=0.32\textwidth]{p9b_bars_nobel_eu_delay.pdf}\hfill
+\includegraphics[width=0.32\textwidth]{p9b_bars_abilene_delay.pdf}
+\caption{主线一：三个拓扑上的最终性能条形图对比。上行：平均奖励（3 种子均值，误差棒为 $\pm$标准差）；中行：带宽服务率；下行：平均时延（ms）。列从左到右：GEANT（$W\!=\!150$）、NOBEL-EU（$W\!=\!150$）、ABILENE（$W\!=\!50$）。彩色实心为学习型网络变体（本文 FiLM-Tf 高亮），灰色斜纹为静态基线。}
 \label{fig:main_bars}
 \end{figure*}
 
 \subsection{主线二：表示能力消融——消息传递与意图条件化}
 \label{sec:exp:repr}
 
-本节回答：是什么赋予了 FiLM-GNN 超越经典算法的表示能力？我们沿"无图结构 $\to$ 有图结构但无流感知 $\to$ 有图结构且流感知"这一递进路径对比三个变体（表~\ref{tab:film_w150_all}）：MLP（无消息传递）、noFiLM-Tf（有消息传递但仅在末端拼接意图）与 FiLM-Tf（逐层注入意图）。三者共享同一 TransformerConv 骨干与超参，仅表示机制不同。
+本节回答：是什么赋予了 FiLM-GNN 超越经典算法的表示能力？为隔离 FiLM 条件化的贡献，我们沿"无图结构 $\to$ 有图结构但无流感知 $\to$ 有图结构且流感知"这一递进路径设计三个变体（图~\ref{fig:main_bars}），三者共享同一 TransformerConv 骨干与超参，仅表示机制不同：
+\begin{itemize}
+\item \textbf{MLP}（无消息传递）：移除消息传递，将式~\eqref{eq:conv} 的 $\mathrm{Conv}$ 替换为逐节点 MLP（仍保留 FiLM 调制），忽略边集 $E$ 与链路特征 $f$，用以检验图结构信息是否必要。
+\item \textbf{noFiLM-Tf}（有消息传递但仅在末端拼接意图）：去掉式~\eqref{eq:film} 的 $\gamma,\beta$ 调制（等价于 $\gamma\equiv 0,\beta\equiv 0$），意图向量 $m_t$ 不进入消息传递、仅在末端打分器处与路径嵌入拼接，即所有流看到同一张图。
+\item \textbf{FiLM-Tf}（逐层注入意图）：本文方法，在每一层都以式~\eqref{eq:film} 的 FiLM 仿射变换调制节点表示。
+\end{itemize}
 
 \textbf{消息传递是基础。} MLP 基线在三项指标上均最差（均值奖励 $-0.177$、BW Score $0.520$），且所有流退化为选同一路径槽（表~\ref{tab:film_w150_bw}中各类得分趋同，近 OSPF 等价行为）。没有邻居聚合，模型无法感知链路利用率的全局分布，也无法为不同意图的流差异化选路——这印证了图结构信息对路由学习的不可或缺。
 
@@ -124,23 +112,8 @@ RANDOM                  & $-0.540$          & $0.300$          & $295.5$ \\
 \label{fig:repr_training}
 \end{figure*}
 
-按 $\phi$ 分桶来看（表~\ref{tab:film_w150_phi}），FiLM-Tf 在时延敏感桶（$\phi<0.2$）的时延仅 $78.3$，较 noFiLM-Tf（$134.9$）降低 $56.6$ms；而在非时延敏感桶（$\phi\geq 0.8$）FiLM-Tf 的时延（$271.4$）反而高于 noFiLM-Tf（$224.9$）。这一"低降高升"模式正是 FiLM 条件化期望的行为：策略理解了不同 $\phi$ 的语义，主动将高意图流的时延资源\textcolor{red}{重新分配}给低意图流，以极低的代价换取了低意图桶服务质量的显著提升。按带宽类别（表~\ref{tab:film_w150_bw}），FiLM-Tf 在 small 流上的 BW Score 达 $0.920$（noFiLM-Tf 仅 $0.677$，增益 $+0.243$），mid 流同样大幅领先（$0.860$ vs $0.623$）；big 流上 FiLM-Tf 略低（$0.351$ vs $0.475$），但以较小的 big 流代价换取了 small/mid 流的超高得分，整体权衡极为有利。
+按 $\phi$ 分桶来看（表~\ref{tab:film_w150_phi}），FiLM-Tf 在时延敏感桶（$\phi<0.2$）的时延仅 $78.3$，较 noFiLM-Tf（$134.9$）降低 $56.6$ms；而在非时延敏感桶（$\phi\geq 0.8$）FiLM-Tf 的时延（$271.4$）反而高于 noFiLM-Tf（$224.9$）。这一"低降高升"模式正是 FiLM 条件化期望的行为：策略理解了不同 $\phi$ 的语义，主动将高意图流的时延资源分配给低意图流，以极低的代价换取了低意图桶服务质量的显著提升。按带宽类别（表~\ref{tab:film_w150_bw}），FiLM-Tf 在 small 流上的 BW Score 达 $0.920$（noFiLM-Tf 仅 $0.677$，增益 $+0.243$），mid 流同样大幅领先（$0.860$ vs $0.623$）；big 流上 FiLM-Tf 略低（$0.351$ vs $0.475$），但以较小的 big 流代价换取了 small/mid 流的超高得分，整体权衡极为有利。
 
-\begin{table}[t]
-\centering
-\caption{主线二消融——ALL FLOWS（$W\!=\!150$，200 ep × 3 seeds，均值$\pm$标准差）。}
-\label{tab:film_w150_all}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccc}
-\toprule
-模型 & Mean $R$ & BW Score & Avg Delay \\
-\midrule
-\textbf{FiLM-Tf}  & $\mathbf{+0.121{\scriptstyle\pm0.006}}$ & $\mathbf{0.759}$ & $\mathbf{112.9}$ \\
-noFiLM-Tf         & $-0.098{\scriptstyle\pm0.013}$ & $0.601$ & $157.8$ \\
-MLP               & $-0.177{\scriptstyle\pm0.010}$ & $0.520$ & $165.4$ \\
-\bottomrule
-\end{tabular}
-\end{table}
 \begin{table}[t]
 \centering
 \caption{主线二消融——$\phi$ 分桶时延（$W\!=\!150$，200 ep，seed 0）\protect\footnotemark[1]。}
@@ -164,7 +137,7 @@ MLP              & $155.6$ & $182.6$ & $216.9$ \\
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{lcccccc}
 \toprule
-模型 & small BW & mid BW & big BW \\
+模型 & $b<8$ & $8\!\le\!b\!<\!32$ & $b\!\ge\!32$ \\
 \midrule
 \textbf{FiLM-Tf} & $\mathbf{0.920}$ & $\mathbf{0.860}$ & $0.351$ \\
 noFiLM-Tf        & $0.677$ & $0.623$ & $0.475$ \\
@@ -172,7 +145,7 @@ MLP              & $0.568$ & $0.532$ & $0.435$ \\
 \bottomrule
 \end{tabular}
 \end{table}
-\footnotetext[1]{本文 ALL FLOWS 指标（表~\ref{tab:film_w150_all}、\ref{tab:conv_w150_all}）为 3 个随机种子均值；$\phi$ 分桶与 BW 类别的细分指标仅在 seed 0 上统计（跨种子趋势一致）。}
+\footnotetext[1]{本文 ALL FLOWS 指标均为 3 个随机种子均值汇总；$\phi$ 分桶与 BW 类别的细分指标仅在 seed 0 上统计（跨种子趋势一致）。}
 
 \subsection{主线三：图注意力算子选择——TransformerConv vs GATv2Conv}
 \label{sec:exp:conv}
@@ -191,25 +164,9 @@ MLP              & $0.568$ & $0.532$ & $0.435$ \\
 \label{fig:conv_training}
 \end{figure*}
 
-从最终策略质量看（表~\ref{tab:conv_w150_all}），FiLM-Tf（TransformerConv$+$FiLM）在平均奖励（$+0.121$）与带宽得分（$0.759$）上最优，大幅领先 FiLM-GATv2（$-0.097$，$0.596$），BW Score 差距 $+0.163$，说明点积注意力在图路由任务上显著优于动态加性注意力。TransformerConv 采用缩放点积注意力~\cite{Shi2021_UniMP}，其注意力权重由查询与键的内积决定，能对不同候选路径之间的质量差异做非对称的成对比较；相比之下，GATv2Conv 的动态加性注意力~\cite{Brody2022_GATv2} 对每对节点独立计算权重但缺乏全局归一化的竞争机制，在需要从 $K$ 条候选中做出区分性选择的路由场景中表达能力受限。
+从最终策略质量看（图~\ref{fig:conv_training}），FiLM-Tf（TransformerConv$+$FiLM）在平均奖励（$+0.121$）与带宽得分（$0.759$）上最优，大幅领先 FiLM-GATv2（$-0.097$，$0.596$），BW Score 差距 $+0.163$，说明点积注意力在图路由任务上显著优于动态加性注意力。TransformerConv 采用缩放点积注意力~\cite{Shi2021_UniMP}，其注意力权重由查询与键的内积决定，能对不同候选路径之间的质量差异做非对称的成对比较；相比之下，GATv2Conv 的动态加性注意力~\cite{Brody2022_GATv2} 对每对节点独立计算权重但缺乏全局归一化的竞争机制，在需要从 $K$ 条候选中做出区分性选择的路由场景中表达能力受限。
 
 按 $\phi$ 分桶来看（表~\ref{tab:conv_w150_phi}），FiLM-Tf 同样呈现第~\ref{sec:exp:repr} 节所述的"低降高升"模式：低意图桶时延仅 $78.3$（GATv2 为 $134.1$，降低 $55.8$ms），高意图桶时延 $271.4$ 略高于 GATv2 的 $261.1$——TransformerConv 比 GATv2 更精准地识别了流的 $\phi$ 语义，将高意图流的时延资源让渡给低意图流。按带宽类别（表~\ref{tab:conv_w150_bw}），FiLM-Tf 的 small/mid 带宽得分（$0.920$/$0.860$）均大幅领先 FiLM-GATv2（$0.673$/$0.620$），big 流上略低（$0.351$ vs $0.448$），以较小的 big 流代价换取了 small/mid 流的超高得分。
-
-\begin{table}[t]
-\centering
-\caption{主线三消融——ALL FLOWS（$W\!=\!150$，200 ep × 3 seeds，均值$\pm$标准差）。}
-\label{tab:conv_w150_all}
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccc}
-\toprule
-模型 & Mean $R$ & BW Score & Avg Delay \\
-\midrule
-\textbf{FiLM-Tf}   & $\mathbf{+0.121{\scriptstyle\pm0.006}}$ & $\mathbf{0.759}$ & $\mathbf{112.9}$ \\
-FiLM-GATv2         & $-0.097{\scriptstyle\pm0.019}$ & $0.596$ & $152.9$ \\
-MLP                & $-0.177{\scriptstyle\pm0.010}$ & $0.520$ & $165.4$ \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \begin{table}[t]
 \centering
@@ -219,7 +176,7 @@ MLP                & $-0.177{\scriptstyle\pm0.010}$ & $0.520$ & $165.4$ \\
 \begin{tabular}{lcccccc}
 
 \toprule
-模型 & low Delay & mid Delay & high Delay \\
+模型 & $\phi<0.2$ & $0.2\!\le\!\phi\!<\!0.8$ & $\phi\!\ge\!0.8$ \\
 \midrule
 \textbf{FiLM-Tf} & $\mathbf{78.3}$ & $180.0$ & $271.4$ \\
 FiLM-GATv2       & $134.1$ & $191.2$ & $261.1$ \\
@@ -236,7 +193,7 @@ MLP              & $155.6$ & $182.6$ & $216.9$ \\
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccc}
 \toprule
-模型 & small BW & mid BW & big BW \\
+模型 & $b<8$ & $8\!\le\!b\!<\!32$ & $b\!\ge\!32$ \\
 \midrule
 \textbf{FiLM-Tf} & $\mathbf{0.920}$ & $\mathbf{0.860}$ & $0.351$ \\
 FiLM-GATv2       & $0.673$ & $0.620$ & $0.448$ \\
@@ -248,13 +205,13 @@ MLP              & $0.568$ & $0.532$ & $0.435$ \\
 \subsubsection{FiLM 与算子的强协同：二维不可加}
 \label{sec:exp:synergy}
 
-本节回答：算子选择（TransformerConv vs GATv2）与条件化机制（FiLM vs noFiLM）是各自独立贡献，还是存在交互？为此我们补齐 noFiLM-GATv2 变体，构成算子$\times$条件化的 $2\times2$ 正交表（表~\ref{tab:synergy_2x2}）。
+本节回答：算子选择（TransformerConv vs GATv2）与条件化机制（FiLM vs noFiLM）是各自独立贡献，还是存在交互？为此我们补齐 noFiLM-GATv2 变体，构成算子$\times$条件化的 $2\times2$ 协同增益分析（表~\ref{tab:synergy_2x2}）。
 
 关键发现是：\emph{FiLM 的增益强烈依赖于底层算子}。在 TransformerConv 上，引入 FiLM 带来 $\Delta R\!=\!+0.219$（$-0.098\!\to\!+0.121$）的巨大提升；但在 GATv2 上，FiLM 的增益仅 $\Delta R\!=\!+0.007$（$-0.104\!\to\!-0.097$），几乎失效。这表明两个维度并非独立可加，而是存在强协同：FiLM 的逐层意图调制只有在高质量点积注意力提供的区分性表示之上才能生效。直观地看，GATv2 的加性注意力本身就难以从 $K$ 条候选中形成清晰的质量区分，即使逐层注入了准确的流意图，也无法转化为有效的路径区分决策。因此，TransformerConv $+$ FiLM 的组合并非两个独立优势的简单叠加，而是二者缺一不可的协同产物。
 
 \begin{table}[t]
 \centering
-\caption{算子$\times$条件化的 $2\times2$ 正交表（Mean $R$，$W\!=\!150$，200 ep × 3 seeds）。括号内为同一算子上 FiLM 带来的增益 $\Delta R$。}
+\caption{算子$\times$条件化的 $2\times2$ 协同增益矩阵（Mean $R$，$W\!=\!150$，200 ep × 3 seeds）。括号内为同一算子上 FiLM 带来的增益 $\Delta R$。}
 \label{tab:synergy_2x2}
 \setlength{\tabcolsep}{6pt}
 \begin{tabular}{lcc}
@@ -294,13 +251,13 @@ noFiLM-Tf         & $1.4\times10^{-6}$ & 全零 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=0.49\columnwidth]{p9b_hidden_diff_film_tf.pdf}\hfill
-\includegraphics[width=0.49\columnwidth]{p9b_hidden_diff_nofilm_tf.pdf}
+\includegraphics[width=0.48\textwidth]{p9b_hidden_diff_film_tf.pdf}\hfill
+\includegraphics[width=0.48\textwidth]{p9b_hidden_diff_nofilm_tf.pdf}
 \caption{相同网络状态与 (src, dst) 对下，极端小流与极端大流的隐藏特征对比（左：FiLM-Tf；右：noFiLM-Tf）。}
 \label{fig:embedding_separation}
-\end{figure}
+\end{figure*}
 
 \textbf{决策层：意图驱动的路径选择多样性。} 表示层的差异最终体现为选路行为的变化。我们在 $200$ 个测试 episode、共 $460$ 个 (src, dst) 对上统计两个变体的路径槽选择分布的熵（以 bits 计，越高说明选择越多样化、越依状态和意图差异化）。FiLM 的平均熵为 $2.235$，显著高于 noFiLM-Tf 的 $1.962$（配对 $t\!\approx\!14.7$，极显著）；在 $76\%$ 的 (src, dst) 对上 FiLM 的熵更高，FiLM 平均启用 $10.4$ 个路径槽而 noFiLM-Tf 仅 $7.9$ 个。这表明 FiLM 策略能根据当前链路状态与每条流的意图做出更细腻、更差异化的路径选择，而 noFiLM-Tf 因看不到意图、只能依赖状态，选择更集中于少数路径槽。这一对比与表示层的敏感性证据相互印证：\emph{意图被 FiLM 注入表示（表示层）$\to$ 驱动更多样化的路径选择（决策层）}，构成了从意图到决策的完整因果链。
 
