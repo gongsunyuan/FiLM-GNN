@@ -1,0 +1,75 @@
+\section{Problem Formulation}
+\label{sec:problem}
+
+This section defines the per-flow routing problem under QoS constraints, establishes the mathematical notation used throughout the paper, presents the utility function and optimization objective, and concludes by arguing why this problem requires a reinforcement learning solution.
+
+\subsection{Network and Traffic Model}
+\label{sec:problem:model}
+
+Consider a directed network $G=(V,E)$ with node set $V$ and link set $E$. Each link $e\in E$ has a delay $d_e$ and bandwidth capacity $c_e$; let the residual bandwidth at a given time be $b_e^{\text{res}}\in[0,c_e]$, with initial value $b_e^{\text{res}}=c_e$.
+
+Traffic arrives online in \emph{sequences} (episodes): a sequence contains $W$ flows arriving sequentially. The agent selects a route for each flow immediately upon arrival and cannot foresee subsequent flows. Once a flow is assigned a path, it continuously occupies its bandwidth for the duration of the sequence -- the ``permanent connection / infinite holding time'' assumption of online routing; this paper does not model flow departures. After the sequence ends, capacities are reset and a new batch of arrivals begins.
+
+The $t$-th flow is described by a quadruple $\mathbf{f}_t = (o_t,\, v_t,\, \phi_t,\, b_t), t=1,\dots,W $, where $o_t, v_t\in V$ are source and destination nodes, $b_t$ is the bandwidth demand, and $\phi_t\in[0,1]$ is the \emph{QoS intent coefficient}. $\phi_t$ follows a flipped Pareto distribution (parameter $\alpha$), with a heavy tail concentrated in the low-$\phi$ region, so that the overwhelming majority of flows are mouse flows with strict latency and bandwidth constraints, and only a small number are elephant flows with relaxed constraints. The bandwidth demand $b_t$ is derived from $\phi_t$ via a positively correlated linear mapping with Gaussian perturbation:
+\begin{equation}
+b_t = b_{\text{floor}} + (b_{\text{max}}-b_{\text{floor}})\cdot\phi_t + \mathcal{N}(0,\sigma),
+\label{eq:bw_gen}
+\end{equation}
+so that $\phi_t$ and $b_t$ are strongly positively correlated (Pearson $r\approx 0.90$) but not fully deterministic, i.e., $\phi_t$ still carries independent QoS information beyond $b_t$. In other words, $(\phi_t, b_t)$ jointly characterize a flow -- an elephant flow is ``large-volume and tolerant of best-effort delivery,'' while a mouse flow is ``small-volume but requires strict guarantees''; the two constitute fundamentally different QoS profiles. Flow sequences are sampled from a demand distribution $\mathcal{D}$, i.e., $(\mathbf{f}_1,\dots,\mathbf{f}_W)\sim\mathcal{D}$.
+
+When processing each flow, the system precomputes $K$ candidate shortest paths $\mathcal{P}_t=\{p_t^{1},\dots,p_t^{K}\}$ ($K$-shortest paths, hop-count-based). The routing decision is to assign one path $p_t\in\mathcal{P}_t$ from this candidate set to carry $\mathbf{f}_t$. Once assigned, the residual bandwidth of links along the path is reduced by the actual occupancy and is not released within the sequence, thereby changing the available capacity faced by subsequent arriving flows -- this is the resource competition between earlier and later flows: the capacity occupied by earlier flows reduces the feasible set of later flows.
+
+\subsection{Service Quality Metrics}
+\label{sec:problem:metrics}
+
+Given the path $p_t$ selected for $\mathbf{f}_t$, we define the bandwidth satisfaction ratio and effective end-to-end delay as its service quality metrics.
+
+\textbf{Bandwidth satisfaction ratio.} The bandwidth deliverable by the path is constrained by the bottleneck link. Define
+\begin{equation}
+\hat b_t = \min\!\Big(\min_{e\in p_t} b_e^{\text{res}},\; b_t\Big),
+\qquad
+\rho_t = \hat b_t/b_t,
+\label{eq:rho}
+\end{equation}
+where $\rho_t\in[0,1]$ (since $\hat b_t\le b_t$ and $\hat b_t\ge 0$, the range is naturally bounded) is the bandwidth satisfaction ratio; $\rho_t=1$ indicates that the demand is fully satisfied.
+
+\textbf{End-to-end effective delay.} We use a \emph{congestion-aware effective delay proxy} to characterize the impact of link occupancy on delay: the fuller the link, the higher the effective delay. Let the utilization ratio after occupancy be $u_e = b_e^{\text{res}}/c_e\in[0,1]$, and define the path effective delay as
+\begin{equation}
+\hat D_t = \sum_{e\in p_t}\big(1-\log u_e\big)\, d_e,
+\label{eq:delay}
+\end{equation}
+where the physical propagation delay $d_e$ is multiplied by a congestion penalty factor $(1-\log u_e)$ that increases with occupancy: when idle ($u_e\!=\!1$) the factor is $1$ and the effective delay falls back to the physical delay; when fully loaded ($u_e\!\to\!0$) the factor diverges. It should be noted that Eq.~\eqref{eq:delay} is not a physical delay rigorously derived from queueing theory, but rather a log-barrier-style monotonic congestion cost -- it pushes the policy away from fully loaded links. In RL it serves only as a reward shaping signal; its monotonicity (higher congestion $\Rightarrow$ higher cost), not its absolute value, drives policy learning. Compared with the classic M/M/1 queueing $1/(1-\rho)$ hyperbolic divergence, this proxy grows more slowly and applies a milder penalty to extreme congestion.
+
+\subsection{Utility Function and Optimization Objective}
+\label{sec:problem:objective}
+
+The QoS intent $\phi_t$ determines what a flow ``cares about.'' We use $\phi_t$ to combine the bandwidth and delay metrics into a single per-flow utility:
+\begin{equation}
+\begin{split}
+U(\mathbf{f}_t, p_t) &=
+\underbrace{\big[(1-\phi_t)\,\mathbb{1}[\rho_t\!\ge\!1] + \phi_t\,\rho_t\big]}_{\text{bandwidth utility }U^{\text{bw}}_t} \\
+&\quad +
+\underbrace{(1-\phi_t)\,\frac{1}{1+\hat D_t/\tau}}_{\text{delay utility }U^{\text{dl}}_t},
+\end{split}
+\label{eq:utility}
+\end{equation}
+Eq.~\eqref{eq:utility} imposes fundamentally different objectives on the two types of flows:
+
+\begin{itemize}
+\item When $\phi_t\!\to\!0$ (mouse flow): the bandwidth utility reduces to a hard satisfaction indicator $\mathbb{1}[\rho_t\!\ge\!1]$ (scoring only when bandwidth is fully satisfied), and the delay utility weight attains its maximum -- i.e., requiring strict bandwidth guarantees and low latency.
+\item When $\phi_t\!\to\!1$ (elephant flow): the bandwidth utility reduces to the continuous ratio $\rho_t$ (partial satisfaction also scores proportionally), and the delay utility term is switched off -- i.e., pursuing only throughput maximization.
+\end{itemize}
+where $\tau$ is a delay normalization constant (see Section~\ref{sec:exp:hyperparam} for the specific value).
+
+\textbf{Optimization objective.} The routing policy must maximize the cumulative utility over the entire sequence in expectation over the demand distribution $\mathcal{D}$:
+\begin{equation}
+\max_{\{p_t\}}\;
+\mathbb{E}_{(\mathbf{f}_1,\dots,\mathbf{f}_W)\sim\mathcal{D}}
+\left[\sum_{t=1}^{W} U(\mathbf{f}_t, p_t)\right],
+\label{eq:objective}
+\end{equation}
+where $\{p_t\}_{t=1}^{W}$ is the policy sequence of routing decisions at each step, and each $p_t\in\mathcal{P}_t$ is determined based only on current and historical observable information $\{\mathbf{f}_\tau, p_\tau\}_{\tau\le t}$ and the current network state under the online causal constraint, and \emph{cannot} depend on future flows $\{\mathbf{f}_\tau\}_{\tau>t}$ that have not yet arrived.
+
+In Eq.~\eqref{eq:objective}, given a flow and a path, both the utility $U(\mathbf{f}_t,p_t)$ and the update of residual bandwidth are deterministic and precisely computable, which might tempt one to think the problem can be solved via classical optimization or greedy rules. However, the true difficulty of this problem lies not in bookkeeping but in the \emph{unseen future}: flows arrive online sequentially, and when selecting a route for the $t$-th flow, the agent cannot foresee subsequent flows $\mathbf{f}_{t+1},\dots,\mathbf{f}_W$ (the online causal constraint). If the entire flow sequence were presented upfront, routing could certainly be formulated as an integer program to obtain a globally optimal solution; but such an offline optimum requires foreknowledge of the entire future, cannot be executed online, and can only serve as a post-hoc performance upper bound -- not to mention that the problem itself is NP-hard. Precisely because the future is unseen, each current routing step alters the feasible set of subsequent flows via the residual bandwidth $b_e^{\text{res}}$: preferentially allocating mouse flows to low-latency, high-residual-bandwidth links may deplete the capacity later needed by elephant flows. Hence stepwise greedy approaches (e.g., CSPF, which selects the shortest constraint-satisfying path for each flow on arrival) are necessarily myopic. The optimal policy must, in expectation over the demand distribution $\mathcal{D}$, non-myopically reserve capacity and trade off across flows -- i.e., attribute the cumulative utility at the sequence end back to those earlier routing steps. This structure of ``sequential decision-making under an unseen future with long-range credit assignment'' is precisely what reinforcement learning characterizes as a Markov decision process. Section~\ref{sec:method} accordingly formalizes Eq.~\eqref{eq:objective} as an MDP and presents the solution method.
+
+\label{sec:problem:why_rl}

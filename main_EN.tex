@@ -1,0 +1,45 @@
+% ============================================================
+% English version — Flow-Aware GNN QoS Routing (IEEE numeric citations)
+% Compile: xelatex main_EN.tex; bibtex main_EN; xelatex×2
+% Uses sections/*_EN.tex and related_work.bib
+% ============================================================
+\documentclass[lettersize,journal]{IEEEtran}
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+
+\title{QoS-FiLM: Flow-Intent-Conditioned GNNs for Online QoS Routing}
+
+\author{\IEEEauthorblockN{Anonymous Authors}
+\IEEEauthorblockA{Paper under double-blind review}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Modern backbone networks carry heterogeneous traffic in which small flows demand strict latency guarantees while large flows seek high throughput. Existing online routing heuristics are myopic because they cannot foresee future arrivals; prevailing learning-based methods generate a single topology embedding for all flows regardless of their QoS intent, which limits their ability to differentiate routing under mixed services. We present QoS-FiLM, an encoder that conditions each message-passing layer of a graph neural network (GNN) on the QoS intent of individual flows via Feature-wise Linear Modulation (FiLM). Identical substrate graphs are thereby embedded differently for heterogeneous flows. We formulate online per-flow routing as a stochastic Markov decision process and train the policy with proximal policy optimization (PPO). Experiments on GEANT, NOBEL-EU, and ABILENE topologies show that QoS-FiLM outperforms several baselines in cumulative utility, bandwidth satisfaction ratio, and end-to-end latency. On GEANT, the mean reward improves by 0.121 over the strongest heuristic, the bandwidth score reaches 0.759, and the average delay drops to 112.9 ms. Ablation studies confirm that FiLM conditioning is essential and that it interacts strongly with the attention operator. Interpretability analysis verifies that the encoder is highly sensitive to QoS intent, while the policy causally divides routing decisions based on flow type.
+\end{abstract}
+
+\begin{IEEEkeywords}
+online routing, graph neural networks, QoS differentiation, feature-wise linear modulation, deep reinforcement learning
+\end{IEEEkeywords}
+
+% ===== English Sections =====
+\input{sections/01_intro_EN.tex}
+\input{sections/02_related_EN.tex}
+\input{sections/03_problem_EN.tex}
+\input{sections/04_method_EN.tex}
+\input{sections/05_experiments_EN.tex}
+\input{sections/06_conclusion_EN.tex}
+
+\bibliographystyle{IEEEtran}
+\bibliography{related_work}
+
+\end{document}
