@@ -22,7 +22,7 @@ SYSTEM.md
 merge/
 
 # IDE / 编辑器
-# 
+#
 .vscode/
 .idea/
 *.swp
@@ -32,3 +32,6 @@ merge/
 # macOS
 .DS_Store
 .pi/
+*.drawio
+*.bak
+compile.ps1
