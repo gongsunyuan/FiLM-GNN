@@ -3,7 +3,7 @@
 % 编译: xelatex main_onecol.tex; bibtex main_onecol; xelatex×2
 % 与 main.tex 共用 sections/ 与 related_work.bib，仅版式改为单栏
 % ============================================================
-\documentclass[conference]{IEEEtran}
+\documentclass[lettersize,journal]{IEEEtran}
 
 \usepackage{ctex}              % 中文支持 (xelatex)
 \usepackage{amsmath,amssymb}
@@ -14,31 +14,29 @@
 \usepackage{multirow}
 \usepackage{url}
 \usepackage{xcolor}
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,fit,calc}
 \usepackage[ruled,linesnumbered]{algorithm2e}  % 训练流程伪代码
+%\usepackage{geometry}    % 单栏更宽，留合理边距
 
-\title{Flow-Aware FiLM-Conditioned GNNs for Differentiated-QoS Online Routing via Deep Reinforcement Learning}
+\title{QoS-FiLM: Flow-Intent-Conditioned GNNs for Online QoS Routing}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-    Modern backbone networks must simultaneously carry heterogeneous traffic ranging from latency-sensitive mice flows to throughput-hungry elephant flows. Existing online routing heuristics optimize for a single objective and are inherently myopic because they cannot foresee future arrivals; meanwhile, learning-based approaches rarely model how mixed QoS intents dynamically reshape the relevance of the same physical topology. We present a flow-conditional encoder, FiLM-GNN, which injects per-flow QoS intent into every message-passing layer of a Graph Neural Network (GNN) via Feature-wise Linear Modulation (FiLM), causing identical substrate graphs to be embedded differently for heterogeneous flows. Formulating online per-flow routing as a stochastic MDP, we train the policy with PPO. Extensive experiments on the GEANT topology show that FiLM-GNN significantly outperforms OSPF, ECMP, and CSPF in cumulative utility, bandwidth satisfaction ratio, and end-to-end latency. Ablation studies confirm the necessity of FiLM conditioning and its operator-agnostic gains; interpretability analyses further verify that the policy causally splits routing decisions based on flow intent.
-
+Modern backbone networks carry heterogeneous traffic where small flows demand strict latency guarantees and large flows seek high throughput. Existing online routing heuristics are myopic because they cannot foresee future arrivals; prevailing learning-based methods generate a single topology embedding for all flows regardless of their QoS intent, which limits their ability to differentiate routing under mixed services. We present QoS-FiLM, an encoder that conditions each message passing layer of a graph neural network (GNN) on the QoS intent of individual flows via Feature-wise Linear Modulation (FiLM). Identical substrate graphs are thereby embedded differently for heterogeneous flows. We formulate online per flow routing as a stochastic Markov decision process and train the policy with proximal policy optimization (PPO). Experiments on GEANT, NOBEL-EU, and ABILENE topologies show that QoS-FiLM outperforms several baselines in cumulative utility, bandwidth satisfaction ratio, and end to end latency. \textcolor{red}{这句结论得改一下，不完整，没有学习型方法}On GEANT, the mean reward improves by 0.121 over the strongest heuristic, the bandwidth score reaches 0.759, and the average delay drops to 112.9 ms. Ablation studies confirm that FiLM conditioning is essential and that it interacts strongly with the attention operator. Interpretability analysis verify that the encoder is highly sensitive to QoS intent, while the policy causally divides routing decisions based on flow type.
 \end{abstract}
 
 \begin{IEEEkeywords}
-强化学习, 图神经网络, QoS 路由, 特征级线性调制, 流量工程
+online routing, graph neural networks, QoS differentiation, featurewise linear modulation, deep reinforcement learning
 \end{IEEEkeywords}
 
 % ===== 章节（与 main.tex 共用同一批 section 文件） =====
 \input{sections/01_intro.tex}
 \input{sections/02_related.tex}
 \input{sections/03_problem.tex}
-\input{sections/05_method.tex}
-\input{sections/06_experiments.tex}
-% \input{sections/07_conclusion.tex}
+\input{sections/04_method.tex}
+\input{sections/05_experiments.tex}
+\input{sections/06_conclusion.tex}
 
 \bibliographystyle{IEEEtran}
 \bibliography{related_work}

@@ -1,23 +1,27 @@
 \section{Related Work}
 \label{sec:related}
 
-本节从传统 QoS 路由、深度强化学习驱动的路由、图神经网络的网络建模能力、以及图网络条件化机制四个维度，综述与本问题密切相关的近期研究，并在末段明确本文定位。
+本节从传统 QoS 路由、深度强化学习驱动的路由、图神经网络的网络建模、以及图网络条件化机制四个维度综述近期研究，并在末段明确本文定位。
 
 \subsection{传统 QoS 路由与流量工程}
 
-OSPF、ECMP、CSPF 等经典协议基于静态链路权重做逐跳转发，在混合业务场景下缺乏差异化服务能力。Wang 与 Crowcroft 奠定了 QoS 路由的约束优化框架\cite{Wang1996_QoSRouting}；Fortz 与 Thorup 揭示了基于权重优化的流量工程在动态需求下的局限性\cite{Fortz2000_TrafficEngineering}。Brundiers 等人研究了 Segment Routing 中环路对流量工程的增益，展示了灵活路径控制在动态负载均衡中的潜力\cite{Brundiers2021_Loops_SR_TE}，并进一步提出了中点优化方法以实现更细粒度的流量工程控制\cite{Brundiers2022_Midpoint_SR_INFOCOM}。这些方法的共同缺陷在于短视性:每步决策独立优化，无法在网络全局与序列长远视角下为异构流预留资源。当老鼠流与大象流共享链路时，静态策略往往在保障低时延与追求高吞吐之间顾此失彼。
+OSPF、ECMP、CSPF等经典协议基于静态链路权重做逐跳转发，在混合业务场景下缺乏差异化服务能力。Wang与Crowcroft奠定了 QoS 路由的约束优化框架\cite{Wang1996_QoSRouting}；Fortz 与 Thorup 揭示了基于权重优化的流量工程在动态需求下的局限性\cite{Fortz2000_TrafficEngineering}。Brundiers 等人研究了 Segment Routing 中环路对流量工程的增益，展示了灵活路径控制在动态负载均衡中的潜力\cite{Brundiers2021_Loops_SR_TE}，并进一步提出了中点优化方法以实现更细粒度的流量工程控制\cite{Brundiers2022_Midpoint_SR_INFOCOM}\textcolor{red}{这个文献编译出来格式有问题}。这些方法的共同缺陷在于短视性:每步决策独立优化，无法在网络全局与序列长远视角下为异构流预留资源。当老鼠流与大象流共享链路时，静态策略往往在保障低时延与追求高吞吐之间顾此失彼。
 
 \subsection{深度强化学习驱动的网络路由}
 
-为突破固定规则的局限，研究者将 DRL 引入路由决策。Liu 等人针对多类型业务需求提出了 DRL-OR，在在线路由中实现了对异构服务的差异化处理\cite{Liu2021_DRLOr_INFOCOM}。Casas-Velasco 等人提出了 DRSIR，以深度 Q 学习在 SDN 中实现智能路由决策\cite{CasasVelasco2021_DRSIR_TNSM}。Chen 等人提出了基于多智能体元强化学习的自适应多路径路由优化框架\cite{Chen2022_MultiagentMeta_TNNLS}。Suzuki 等人提出了多智能体深度强化学习方法，在多云边缘网络中联合优化计算卸载与路由决策，验证了多智能体协作在动态网络环境中的自适应能力\cite{Suzuki2023_MADRL_Routing_TNSM}。Sanchez 等人提出了 DQS，以 QoS 驱动的深度强化学习实现 SDN 中的路由优化\cite{Sanchez2024_DQS_JPDC}。然而，上述方法存在两个共性局限：其一，策略网络大多以全连接层或简单嵌入编码网络状态，缺乏对拓扑结构的显式建模能力，泛化性受限；其二，它们通常为所有流优化单一的全局目标（如最小化最大链路利用率或平均时延），未将逐流 QoS 意图作为条件信号嵌入策略网络，无法在混合业务下实现差异化路由。
+为突破固定规则的局限，研究者将 DRL 引入路由决策。Liu等人提出了DRL-OR，以多目标DRL处理异构服务需求\cite{Liu2021_DRLOr_INFOCOM}。Casas-Velasco 等人提出了 DRSIR，以深度 Q 学习在 SDN 中实现智能路由决策\cite{CasasVelasco2021_DRSIR_TNSM}。Chen 等人提出了基于多智能体元强化学习的自适应多路径路由优化框架\cite{Chen2022_MultiagentMeta_TNNLS}。Suzuki 等人提出了多智能体深度强化学习方法，在多云边缘网络中联合优化计算卸载与路由决策，验证了多智能体协作在动态网络环境中的自适应能力\cite{Suzuki2023_MADRL_Routing_TNSM}。Sanchez 等人提出了 DQS，以 QoS 驱动的DRL实现 SDN 中的路由优化\cite{Sanchez2024_DQS_JPDC}。然而，上述方法存在两个共性局限：其一，策略网络大多以全连接层或简单嵌入编码网络状态，缺乏对拓扑结构的显式建模能力，泛化性受限；其二，它们通常为所有流优化单一的全局目标（如最小化最大链路利用率或平均时延），未将逐流 QoS 意图作为条件信号嵌入策略网络，无法在混合业务下实现差异化路由。
 
 \subsection{图神经网络的网络建模与路由优化}
 
-图神经网络（GNN）为编码网络拓扑提供了自然工具。Rusek 等人利用消息传递神经网络建模链路时延与丢包，开创了 RouteNet 系列工作\cite{Rusek2020_JSAC_RouteNet}。Ferriol-Galm\'{e}s 等人进一步提出 RouteNet-Fermi，通过增强的 GNN 架构实现大规模网络性能预测与优化\cite{FerriolGalmes_2023_RouteNetFermi}。Huang 等人提出了xNet，通过学习时序状态转移函数实现细粒度流级 QoS 预测\cite{Huang2024_ToN_xNetModeling}。Munikoti 等人系统综述了深度强化学习与图神经网络结合的挑战与机遇，揭示了现有方法在复杂网络优化中的瓶颈\cite{Munikoti2024_DRL_GNN_TNNLS}。Almasan 等人探索了 GNN 与 DRL 在路由优化中的联合应用，验证了图结构感知对策略质量的提升\cite{Almasan2022_RLmeetsGNN}。Bern\'{a}rdez 等人提出了 MAGNNETO，以基于 GNN 的多智能体系统在流量工程优化中实现了分布式决策与快速响应\cite{Bernardez2023_MAGNNETO_TCCN}。Bhuvanasi 等人利用 GNN 与多智能体 DRL 实现了对拓扑变化的弹性路由\cite{Bhuvanasi2023_ResilientRouting_TNSM}。Yang 等人将图卷积网络与 DRL 结合，在时间敏感网络中联合优化路由与调度\cite{Yang2022_GCN_RL_IoTJ}。Dong 等人提出了基于 GCN 的多任务深度强化学习方法，在网络切片与路由的联合优化中验证了图感知策略的有效性\cite{Dong2022_GCN_Slicing_Routing_TCCN}。然而，现有 GNN 方法存在结构性的表示同质化问题：它们要么聚焦于聚合流量下的离线性能建模（如 RouteNet），学习``一张图、一种全局嵌入''；要么在在线决策中为所有流生成统一的拓扑表示（如 GNN+DRL 方法）。这意味着，当老鼠流与大象流先后到达时，系统看到的是同一张图的同一个嵌入，无法根据逐流的 QoS 特征对同一拓扑进行差异化感知，更无法据此做出差异化的路由决策。
+图神经网络为编码网络拓扑提供了自然工具，现有研究沿两个方向展开。
+其一是离线性能建模。Rusek等人提出的RouteNet\cite{Rusek2020_JSAC_RouteNet}与Ferriol-Galm\'{e}s等人提出的RouteNet-Fermi\cite{FerriolGalmes_2023_RouteNetFermi}利用消息传递神经网络预测链路时延与丢包，Huang等人提出的xNet通过学习时序状态转移实现流级QoS预测\cite{Huang2024_ToN_xNetModeling}。这些方法聚焦于聚合流量下的离线建模，学习``一张图、一种全局嵌入''，无法适应在线逐流决策。
+其二是在线决策中的图感知策略。Almasan等人验证了GNN与DRL联合应用对路由质量的提升\cite{Almasan2022_RLmeetsGNN}；Bern\'{a}rdez等人提出的MAGNNETO以多智能体GNN系统实现分布式流量工程\cite{Bernardez2023_MAGNNETO_TCCN}；Yang等人和Dong等人分别在时间敏感网络和网络切片场景中探索了图感知的路由与调度联合优化\cite{Yang2022_GCN_RL_IoTJ,Dong2022_GCN_Slicing_Routing_TCCN}；Bhuvanasi等人利用GNN与多智能体DRL实现了弹性路由\cite{Bhuvanasi2023_ResilientRouting_TNSM}。尽管这些方法将GNN引入在线决策，它们仍为所有流生成统一的拓扑表示。当老鼠流与大象流先后到达时，系统看到的是同一张图的同一个嵌入，无法根据逐流的QoS特征进行差异化感知，更无法据此做出不同的路由决策。
 
 \subsection{图神经网络的条件化机制}
 
-为使网络表示能够根据外部条件动态调整，研究者提出了多种条件化机制。Perez 等人提出的 FiLM（Feature-wise Linear Modulation）通过仿射变换将辅助信息注入神经网络各层 \cite{Perez2018_FiLM}；Brockschmidt 等人将其拓展至图领域，提出 GNN-FiLM，以目标节点表示调制消息传递过程 \cite{Brockschmidt2020_GNNFiLM}。在异构图学习领域，Hu 等人提出的 Heterogeneous Graph Transformer 通过节点类型条件化注意力来区分不同语义关系 \cite{Hu2020_HGT}；Brody 等人提出的 GATv2 以动态注意力机制实现了边级条件化权重计算 \cite{Brody2022_GATv2}。然而，上述条件化机制主要服务于节点分类、分子生成或静态图表示学习任务，其调制信号来源于图内结构（目标节点、边类型、节点类别等），而非逐流的外部 QoS 意图。在在线路由场景中，真正需要条件化的并非图内节点属性，而是到达流的 QoS 特征：同一张拓扑在面对老鼠流与大象流时，应当产生截然不同的嵌入与决策。现有文献尚未将 FiLM 条件化机制引入逐流在线路由场景，使得混合业务下的差异化拓扑感知与策略学习成为开放问题。
+为使网络表示能够根据外部条件动态调整，研究者提出了多种条件化机制。这些机制可按条件信号的作用层级分为三类：
+（1）\textbf{节点级条件化}，如Brockschmidt等人提出的GNN-FiLM\cite{Brockschmidt2020_GNNFiLM}，以目标节点特征生成仿射调制参数，直接重塑消息传递过程；（2）\textbf{边级动态权重}，如Brody等人的GATv2\cite{Brody2022_GATv2}，以节点特征的动态交互计算自适应注意力权重，实现关系强度的条件化调整；（3）\textbf{类型级条件化}，如Hu等人的异构图Transformer\cite{Hu2020_HGT}，以节点类型作为语义条件，区分不同关系模式的特征变换。
+然而，上述机制的条件信号均来源于图内结构（目标节点、边特征、节点类别等），而非逐流的外部QoS意图。在在线路由场景中，到达流的QoS特征才是区分嵌入的关键：同一张拓扑在面对老鼠流与大象流时，应当产生截然不同的节点表示与路由决策。现有文献尚未将FiLM条件化机制引入逐流在线路由场景，差异化拓扑感知与策略学习仍是开放问题。
 
 
-综上，现有工作存在明确缺口：（1）传统方法短视且无法处理混合 QoS；（2）DRL 方法缺乏拓扑显式建模；（3）GNN 方法假设同质流量；（4）条件化 GNN 尚未引入逐流在线路由。本文填补上述差距，提出流感知 FiLM-GNN 架构，以逐流 QoS 意图作为外部条件信号，通过 FiLM 重塑 GNN 的每层消息传递，使同一张物理拓扑在异构业务流下被编码为差异化的策略输入，进而以 PPO 训练非短视的在线选路策略。
+综上，现有工作存在明确缺口：（1）传统方法短视且无法处理混合 QoS；（2）DRL 方法缺乏拓扑显式建模；（3）GNN 方法假设同质流量,存在``同图同嵌入''的表示同质化问题；（4）条件化 GNN 尚未引入逐流在线路由。本文提出流感知 QoS-FiLM 架构填补上述差距。
