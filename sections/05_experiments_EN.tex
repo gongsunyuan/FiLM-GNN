@@ -73,16 +73,16 @@ At $W\!=\!150$, FiLM-GNN outperforms all classical baselines on all three metric
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.32\textwidth]{p9b_bars_geant_linear_reward.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_bars_nobel_eu_reward.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_bars_abilene_reward.pdf}\\[2pt]
-\includegraphics[width=0.32\textwidth]{p9b_bars_geant_linear_bw.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_bars_nobel_eu_bw.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_bars_abilene_bw.pdf}\\[2pt]
-\includegraphics[width=0.32\textwidth]{p9b_bars_geant_linear_delay.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_bars_nobel_eu_delay.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_bars_abilene_delay.pdf}
-\caption{Experiment I: Final performance bar chart comparison across three topologies. Top row: mean reward (mean of 3 seeds, error bars $\pm$ std.\ dev.); middle row: bandwidth service rate; bottom row: average delay (ms). Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$). Solid colored bars represent learned network variants (QoS-FiLM highlighted), gray hatched bars represent static baselines.}
+\subimg{p9b_bars_geant_linear_reward.pdf}\hfill
+\subimg{p9b_bars_nobel_eu_reward.pdf}\hfill
+\subimg{p9b_bars_abilene_reward.pdf}\\[4pt]
+\subimg{p9b_bars_geant_linear_bw.pdf}\hfill
+\subimg{p9b_bars_nobel_eu_bw.pdf}\hfill
+\subimg{p9b_bars_abilene_bw.pdf}\\[4pt]
+\subimg{p9b_bars_geant_linear_delay.pdf}\hfill
+\subimg{p9b_bars_nobel_eu_delay.pdf}\hfill
+\subimg{p9b_bars_abilene_delay.pdf}
+\caption{Experiment I: Final performance bar chart comparison across three topologies. (a)--(c) mean reward (mean of 3 seeds, error bars $\pm$ std.\ dev.); (d)--(f) bandwidth service rate; (g)--(i) average delay (ms). Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$). Solid colored bars represent learned network variants (QoS-FiLM highlighted), gray hatched bars represent static baselines.}
 \label{fig:main_bars}
 \end{figure*}
 
@@ -102,13 +102,13 @@ This section answers: what confers QoS-FiLM its representational capacity that s
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.32\textwidth]{p9b_groupA_geant_linear_eval.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_groupA_nobel_eu_eval.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_groupA_abilene_eval.pdf}\\[2pt]
-\includegraphics[width=0.32\textwidth]{p9b_groupA_geant_linear_bw.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_groupA_nobel_eu_bw.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_groupA_abilene_bw.pdf}
-\caption{Experiment II: Training curves of QoS-FiLM, noFiLM-Tf, and MLP on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence band). Top row: Evaluation Reward; bottom row: Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$). Gray dashed lines indicate the final evaluation performance of classical baselines.}
+\subimg{p9b_groupA_geant_linear_eval.pdf}\hfill
+\subimg{p9b_groupA_nobel_eu_eval.pdf}\hfill
+\subimg{p9b_groupA_abilene_eval.pdf}\\[4pt]
+\subimg{p9b_groupA_geant_linear_bw.pdf}\hfill
+\subimg{p9b_groupA_nobel_eu_bw.pdf}\hfill
+\subimg{p9b_groupA_abilene_bw.pdf}
+\caption{Experiment II: Training curves of QoS-FiLM, noFiLM-Tf, and MLP on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence band). (a)--(c) Evaluation Reward; (d)--(f) Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$). Gray dashed lines indicate the final evaluation performance of classical baselines.}
 \label{fig:repr_training}
 \end{figure*}
 
@@ -154,13 +154,13 @@ This section answers: under the same FiLM conditioning framework, how much does 
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.32\textwidth]{p9b_groupB_geant_linear_eval.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_groupB_nobel_eu_eval.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_groupB_abilene_eval.pdf}\\[2pt]
-\includegraphics[width=0.32\textwidth]{p9b_groupB_geant_linear_bw.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_groupB_nobel_eu_bw.pdf}\hfill
-\includegraphics[width=0.32\textwidth]{p9b_groupB_abilene_bw.pdf}
-\caption{Experiment III: Training curves of QoS-FiLM, FiLM-GATv2, and noFiLM-GATv2 on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence band). Top row: Evaluation Reward; bottom row: Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$).}
+\subimg{p9b_groupB_geant_linear_eval.pdf}\hfill
+\subimg{p9b_groupB_nobel_eu_eval.pdf}\hfill
+\subimg{p9b_groupB_abilene_eval.pdf}\\[4pt]
+\subimg{p9b_groupB_geant_linear_bw.pdf}\hfill
+\subimg{p9b_groupB_nobel_eu_bw.pdf}\hfill
+\subimg{p9b_groupB_abilene_bw.pdf}
+\caption{Experiment III: Training curves of QoS-FiLM, FiLM-GATv2, and noFiLM-GATv2 on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence band). (a)--(c) Evaluation Reward; (d)--(f) Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$).}
 \label{fig:conv_training}
 \end{figure*}
 
@@ -250,9 +250,9 @@ noFiLM-Tf         & $1.4\times10^{-6}$ & All zero \\
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.48\textwidth]{p9b_hidden_diff_film_tf.pdf}\hfill
-\includegraphics[width=0.48\textwidth]{p9b_hidden_diff_nofilm_tf.pdf}
-\caption{Comparison of hidden features for an extreme small flow and an extreme large flow under the same network state and (src, dst) pair (left: QoS-FiLM; right: noFiLM-Tf).}
+\subimgw{p9b_hidden_diff_film_tf.pdf}\hfill
+\subimgw{p9b_hidden_diff_nofilm_tf.pdf}
+\caption{Comparison of hidden features for an extreme small flow and an extreme large flow under the same network state and (src, dst) pair. (a) QoS-FiLM; (b) noFiLM-Tf.}
 \label{fig:embedding_separation}
 \end{figure*}
 

@@ -13,6 +13,21 @@
 \usepackage{multirow}
 \usepackage{url}
 \usepackage{xcolor}
+% 子图命令：图片上方自动编号 (a),(b),(c)...
+\newcounter{subfigcnt}[figure]
+\renewcommand{\thesubfigcnt}{(\alph{subfigcnt})}
+\newcommand{\subimg}[1]{%
+  \refstepcounter{subfigcnt}%
+  \begin{minipage}[t]{0.32\textwidth}\centering
+  \includegraphics[width=\linewidth]{#1}\\[2pt]
+  \footnotesize\thesubfigcnt
+  \end{minipage}}%
+\newcommand{\subimgw}[1]{%
+  \refstepcounter{subfigcnt}%
+  \begin{minipage}[t]{0.48\textwidth}\centering
+  \includegraphics[width=\linewidth]{#1}\\[2pt]
+  \footnotesize\thesubfigcnt
+  \end{minipage}}%
 \usepackage[ruled,linesnumbered]{algorithm2e}
 
 \title{QoS-FiLM: Flow-Intent-Conditioned GNNs for Online QoS Routing}
