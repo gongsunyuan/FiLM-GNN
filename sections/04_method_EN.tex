@@ -61,7 +61,13 @@ and applies FiLM modulation to the message-passing output:
 x^{(\ell)} &= \big(1+\gamma^{(\ell)}\big)\odot \tilde x^{(\ell)} + \beta^{(\ell)} \;+\; x^{(\ell-1)},
 \label{eq:film}
 \end{align}
-where $\mathrm{Conv}^{(\ell)}$ is a graph attention operator (default: TransformerConv~\cite{Shi2021_UniMP}\textcolor{red}{这篇论文好像不是这个方法最原始的文献}-style dot-product attention, with link features $f$ as edge attributes), $\mathrm{LN}$ is layer normalization, $\odot$ is element-wise multiplication, and the final term is a residual connection (adding the input of the layer directly to its output to alleviate training difficulties in deep networks). Eq.~\eqref{eq:film} is the key to our method: the intent vector $m_t$ reshapes node representations at \emph{every layer} via the affine transformation $(1+\gamma)\odot\tilde x+\beta$, causing the same physical topology to be encoded as different embeddings when facing mouse flows versus elephant flows. The fundamental distinction from GNN-FiLM~\cite{Brockschmidt2020_GNNFiLM} is: the latter computes $\gamma,\beta$ from the \emph{target node representation} to modulate aggregation, whereas we compute $\gamma,\beta$ from the \emph{per-flow QoS intent}, making message passing flow-aware.
+where $\mathrm{Conv}^{(\ell)}$ is a graph attention operator (default: TransformerConv~\cite{Shi2021_UniMP}
+% TransformerConv 引用查证：PyTorch Geometric 官方文档及源码（transformer_conv.py）
+% 均标注该算子来自 "Masked Label Prediction: Unified Message Passing Model for
+% Semi-Supervised Classification"（Shi et al., IJCAI 2021, arXiv:2009.03509），
+% 即 Shi2021_UniMP。经三方交叉验证确认此为原始文献。
+-style dot-product attention,
+with link features $f$ as edge attributes), $\mathrm{LN}$ is layer normalization, $\odot$ is element-wise multiplication, and the final term is a residual connection (adding the input of the layer directly to its output to alleviate training difficulties in deep networks). Eq.~\eqref{eq:film} is the key to our method: the intent vector $m_t$ reshapes node representations at \emph{every layer} via the affine transformation $(1+\gamma)\odot\tilde x+\beta$, causing the same physical topology to be encoded as different embeddings when facing mouse flows versus elephant flows. The fundamental distinction from GNN-FiLM~\cite{Brockschmidt2020_GNNFiLM} is: the latter computes $\gamma,\beta$ from the \emph{target node representation} to modulate aggregation, whereas we compute $\gamma,\beta$ from the \emph{per-flow QoS intent}, making message passing flow-aware.
 
 \subsection{Path Pooling, Scoring, and Value Network}
 \label{sec:method:scorer}

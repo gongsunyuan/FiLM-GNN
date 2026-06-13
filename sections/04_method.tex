@@ -66,7 +66,7 @@ x^{(\ell)} &= \big(1+\gamma^{(\ell)}\big)\odot \tilde x^{(\ell)} + \beta^{(\ell)
 \subsection{路径池化、打分与价值网络}
 \label{sec:method:scorer}
 
-\textbf{路径池化。} 节点嵌入 $x^{(L)}$ 经一个路径池化器（PathPooler）转换为候选路径表示。对第 $k$ 条候选路径，沿其节点序列取出嵌入构成\textcolor{red}{变长}序列，用一个 LSTM 编码并取末隐状态、再经层归一化，得到路径嵌入 $z_k\in\mathbb{R}^{h}$。这样 $K$ 条候选路径被池化为 $\{z_k\}_{k=1}^{K}$。
+\textbf{路径池化。} 节点嵌入 $x^{(L)}$ 经一个路径池化器（PathPooler）转换为候选路径表示。对第 $k$ 条候选路径，沿其节点序列取出嵌入构成变长序列，用一个 LSTM 编码并取末隐状态、再经层归一化，得到路径嵌入 $z_k\in\mathbb{R}^{h}$。这样 $K$ 条候选路径被池化为 $\{z_k\}_{k=1}^{K}$。
 
 \textbf{打分与策略。} 打分器 $\mathrm{KPathScorer}$ 把每条路径嵌入与当前流意图拼接 $[z_k; m_t]$，先经特征 MLP（ELU $+$ LayerNorm）再经打分头 MLP 输出标量分值 $\ell_k$（logit，即未归一化的打分）。$K$ 个分值构成一个 Categorical 分布，策略据此采样动作：
 \begin{equation}
