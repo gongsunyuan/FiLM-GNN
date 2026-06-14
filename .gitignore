@@ -28,6 +28,7 @@ merge/
 *.swp
 *.swo
 *~
+p9b_final/
 
 # macOS
 .DS_Store

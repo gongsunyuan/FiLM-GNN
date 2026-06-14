@@ -6,6 +6,24 @@
 
 \textbf{拓扑与流量。} 主实验在 GEANT 骨干网拓扑（$22$ 节点、$36$ 条链路）上进行。为训练能泛化到不同网络状态的策略，每个 episode 开始时重新随机生成全部链路属性：带宽从 $\text{Uniform}[30,100]$ 采样、时延从 $\text{Uniform}[1,20]$ 采样。流量生成以 QoS 意图 $\phi$ 为主导变量：$\phi$ 由 Pareto 翻转分布（$\alpha\!=\!0.2$）生成，使绝大部分流集中于低 $\phi$ 区间（即带宽与延迟约束严格的老鼠流），仅少量流为高 $\phi$（约束宽松的大象流）。带宽需求 $b$ 由 $\phi$ 通过正相关线性映射导出（式~\eqref{eq:bw_gen}），其中 $b_{\text{max}}\!=\!40$，高斯噪声标准差为跨度的 $0.15$ 倍，使 $\phi$ 与 $b$ 保持强正相关（Pearson $r\!\approx\!0.90$）但非完全确定——$\phi$ 仍携带 $b$ 之外的独立信息。
 
+\begin{figure*}[t]
+\centering
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{ABILENE_topo.pdf}\\[2pt]
+\footnotesize(a)~ABILENE
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{GEANT_topo.pdf}\\[2pt]
+\footnotesize(b)~GEANT
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{NOBEL_EU_topo.pdf}\\[2pt]
+\footnotesize(c)~NOBEL-EU
+\end{minipage}
+\caption{实验所用的三张骨干网拓扑。}
+\label{fig:topologies}
+\end{figure*}}
+
 \textbf{序列长度。} 每个 episode 包含 $W=150$ 条流的顺序到达，要求策略在长程信用分配下维持服务质量。随机拓扑与流生成确保 agent 不能死记固定路径，必须根据当前链路状态与每条流的意图做出差异化路由决策。
 
 \textbf{基线。} 与四种经典选路策略对比：OSPF（最短跳数）、ECMP（等价多路径随机）、CSPF（在线约束最短路）与 RANDOM。所有方法均在同样的 $200$ 个测试流量序列（episode）上评估并取平均；其中 PPO 策略采用确定性动作（在 $K$ 条候选中取概率最大者，不做探索采样）以保证结果可复现。

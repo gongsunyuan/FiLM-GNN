@@ -6,6 +6,24 @@
 
 \textbf{Topology and Traffic.} The main experiments are conducted on the GEANT backbone topology ($22$ nodes, $36$ links). To train a policy that generalizes across network states, all link attributes are randomly regenerated at the start of each episode: bandwidth is sampled from $\text{Uniform}[30,100]$ and delay from $\text{Uniform}[1,20]$. Traffic generation treats the QoS intent $\phi$ as the dominant variable: $\phi$ is drawn from a flipped Pareto distribution ($\alpha\!=\!0.2$), so that the overwhelming majority of flows fall in the low-$\phi$ region (mouse flows with strict bandwidth and delay constraints) and only a small number are high-$\phi$ flows (elephant flows with relaxed constraints). The bandwidth demand $b$ is obtained from $\phi$ through a positively correlated linear mapping (Eq.~\eqref{eq:bw_gen}), with $b_{\text{max}}\!=\!40$ and a Gaussian noise standard deviation equal to $0.15$ times the span, so that $\phi$ and $b$ remain strongly positively correlated (Pearson $r\!\approx\!0.90$) yet not fully deterministic, with $\phi$ still carrying information independent of $b$.
 
+\begin{figure*}[t]
+\centering
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{ABILENE_topo.pdf}\\[2pt]
+\footnotesize(a)~ABILENE
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{GEANT_topo.pdf}\\[2pt]
+\footnotesize(b)~GEANT
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{NOBEL_EU_topo.pdf}\\[2pt]
+\footnotesize(c)~NOBEL-EU
+\end{minipage}
+\caption{The three backbone topologies used in the experiments.}
+\label{fig:topologies}
+\end{figure*}
+
 \textbf{Sequence Length.} Each episode contains $W=150$ flows arriving sequentially, requiring the policy to maintain service quality under long-range credit assignment. Randomized topologies and flow generation ensure that the agent cannot memorize fixed paths and must instead make differentiated routing decisions based on the current link states and the intent of each flow.
 
 \textbf{Baselines.} We compare against four classical routing strategies: OSPF (shortest hop count), ECMP (equal-cost multipath random), CSPF (online constrained shortest path), and RANDOM. All methods are evaluated on the same $200$ test traffic sequences (episodes) and averaged; the PPO policy uses deterministic actions (selecting the highest-probability candidate among the $K$ paths, without exploration sampling) to ensure reproducibility.
