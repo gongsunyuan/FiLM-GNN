@@ -1,16 +1,28 @@
 \section{Methodology}
 \label{sec:method}
 
-We formalize the online routing optimization of Section~\ref{sec:problem:objective} as an MDP (\S4.1), justify the choice of PPO as the training algorithm (\S4.2), and present the flow-aware QoS-FiLM architecture (\S4.3--4.5). All network dimensions, layer counts, and training coefficients are written symbolically here; their specific values are listed in Section~\ref{sec:exp:hyperparam}.
+We formalize the online routing optimization of Section~\ref{sec:problem:objective} as an MDP (\S\ref{sec:method:mdp}), justify the choice of PPO as the training algorithm (\S\ref{sec:method:algo}), and present the flow-aware QoS-FiLM architecture (\S\ref{sec:method:overview}--\ref{sec:method:train}). All network dimensions, layer counts, and training coefficients are written symbolically here; their specific values are listed in Section~\ref{sec:exp:hyperparam}.
+
+\subsection{Architecture Overview}
+\label{sec:method:overview}
+
+Fig.~\ref{fig:film_gnn_arch} gives a high-level picture of the QoS-FiLM architecture, which consists of three main components. \textbf{(1) FiLM-GNN encoder:} takes as input the current graph snapshot (node and link features) and the flow intent vector $m_t = [\phi_t, \tilde b_t]$. At each graph attention layer, the intent vector generates per-channel scaling $\gamma^{(\ell)}$ and shifting $\beta^{(\ell)}$ parameters via lightweight MLPs; these modulate the message-passing output through an affine transformation $x^{(\ell)} = (1+\gamma^{(\ell)})\odot \tilde x^{(\ell)} + \beta^{(\ell)} + x^{(\ell-1)}$, so that the same physical topology yields different node embeddings for flows with distinct QoS requirements. \textbf{(2) Actor Head:} pools the node embeddings along each candidate path via an LSTM-based PathPooler, concatenates the resulting path representation with $m_t$, and scores the $K$ candidates through the KPathScorer to produce a Categorical action distribution. \textbf{(3) Critic Head:} aggregates the node embeddings into a graph-level vector via attention pooling (where attention weights depend on $m_t$) and regresses the state value $V_\psi(s_t)$ through an MLP. These three components operate in a closed MDP loop: the agent observes the current state, selects a path for the arriving flow, the environment updates link capacities, and PPO optimizes the policy from the collected trajectories.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{ENV-REACT.pdf}
+\caption{Overall architecture of QoS-FiLM.}
+\label{fig:film_gnn_arch}
+\end{figure}
 
 \subsection{Problem Formalization: MDP Modeling}
 \label{sec:method:mdp}
 
 We formalize the online routing optimization of Section~\ref{sec:problem:objective} as a Markov decision process $(\mathcal{S},\mathcal{A},P,r)$. The agent makes sequential decisions: at step $t$ it selects, for the $t$-th flow $\mathbf{f}_t$, a path from the candidate set $\mathcal{P}_t$.
 
-\textbf{State} $s_t\in\mathcal{S}$ \textcolor{red}{也写成元组形式?}consists of three parts:
+\textbf{State} $s_t = (\mathcal{G}_t,\, m_t,\, \mathcal{P}_t) \in \mathcal{S}$ consists of three parts:
 \begin{enumerate}
-\item \emph{Graph snapshot}: node features (marking the source and destination $o_t,v_t$ of the current flow) and link features $[d_e,\,c_e,\,b_e^{\text{res}}]$ (delay, capacity, residual bandwidth);
+\item \emph{Graph snapshot} $\mathcal{G}_t$: node features (marking the source and destination $o_t,v_t$ of the current flow) and link features $[d_e,\,c_e,\,b_e^{\text{res}}]$ (delay, capacity, residual bandwidth);
 \item \emph{Flow intent vector} $m_t=[\phi_t,\,\tilde b_t]$, where $\tilde b_t$ is the normalized bandwidth demand;
 \item \emph{Candidate paths} $\mathcal{P}_t$ and their validity masks: each path is padded to a fixed tensor length, and the binary mask indicates which positions correspond to actual path nodes versus padding tokens.
 \end{enumerate}
@@ -38,12 +50,7 @@ Section~\ref{sec:problem:objective} argued that this problem is an online stocha
 
 The encoder maps the graph snapshot in the state into node embeddings (i.e., a vector representation for each node). The core idea is that every layer of message passing should ``know which flow is currently being routed,'' so that flows with different QoS intents yield different topological representations. We implement this conditioning with FiLM~\cite{Perez2018_FiLM}. Let the link feature vector be $f_e = [d_e,\, c_e,\, b_e^{\text{res}}] \in \mathbb{R}^3$, the concatenation of delay, capacity, and residual bandwidth.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{ENV-REACT.pdf}
-\caption{\textcolor{red}{这个图是不是在本章最开始单独开一节来说明，图标题不要这么长，可以正文概述}Overall QoS-FiLM architecture. Left: the flow-aware FiLM-GNN encoder; each layer generates FiLM parameters $(\gamma^{(\ell)}, \beta^{(\ell)})$ from the current flow's QoS intent vector $m_t = [\phi_t, \tilde b_t]$, reshaping node embeddings via residual modulation $x^{(\ell)} = (1+\gamma^{(\ell)})\odot\tilde x^{(\ell)}+\beta^{(\ell)}+x^{(\ell-1)}$, so that the same topology produces differentiated representations for different-intent flows. Right: the policy-value dual-head structure; the Actor Head outputs a Categorical action distribution via the PathPooler (LSTM $+$ LayerNorm) and the $K$-way scorer (KPathScorer); the Critic Head aggregates node embeddings via attention pooling and regresses the state value $V_\psi(s_t)$ through an MLP. Bottom right: the MDP closed loop and PPO training procedure.}
-\label{fig:film_gnn_arch}
-\end{figure}
+
 
 Let the hidden dimension be $h$. An MLP $\mathrm{MLP}_{\text{lift}}$ first lifts the raw node features to $h$ dimensions: $x^{(0)}=\mathrm{MLP}_{\text{lift}}(x)$. We then stack $L$ graph attention blocks.
 
