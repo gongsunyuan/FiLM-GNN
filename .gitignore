@@ -38,3 +38,15 @@ p9b_final/
 compile.ps1
 main_EN.pdf
 TODO.md
+data/topos/NOBEL_EU_with_attrs.graphml
+data/topos/GEANT_with_attrs.graphml
+data/topos/ABILENE_with_attrs.graphml
+data/topos/export_pdf.bat
+data/topos/export_pdf.ps1
+*.ps1
+*.bak
+*.bkp
+*.dtmp
+figures/ENV-REACT.vsdx.drawio.pdf
+figures/ENV-REACT.vsdx.drawio.svg
+figures/LaTeX2AI_header.tex

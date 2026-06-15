@@ -92,15 +92,42 @@ At $W\!=\!150$, QoS-FiLM outperforms all classical baselines on all three metric
 
 \begin{figure*}[t]
 \centering
-\subimg{p9b_bars_geant_linear_reward.pdf}\hfill
-\subimg{p9b_bars_nobel_eu_reward.pdf}\hfill
-\subimg{p9b_bars_abilene_reward.pdf}\\[4pt]
-\subimg{p9b_bars_geant_linear_bw.pdf}\hfill
-\subimg{p9b_bars_nobel_eu_bw.pdf}\hfill
-\subimg{p9b_bars_abilene_bw.pdf}\\[4pt]
-\subimg{p9b_bars_geant_linear_delay.pdf}\hfill
-\subimg{p9b_bars_nobel_eu_delay.pdf}\hfill
-\subimg{p9b_bars_abilene_delay.pdf}
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_bars_geant_linear_reward.pdf}\\[2pt]
+\footnotesize(a) GEANT reward
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_bars_nobel_eu_reward.pdf}\\[2pt]
+\footnotesize(b) NOBEL-EU reward
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_bars_abilene_reward.pdf}\\[2pt]
+\footnotesize(c) ABILENE reward
+\end{minipage}\\[4pt]
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_bars_geant_linear_bw.pdf}\\[2pt]
+\footnotesize(d) GEANT bandwidth
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_bars_nobel_eu_bw.pdf}\\[2pt]
+\footnotesize(e) NOBEL-EU bandwidth
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_bars_abilene_bw.pdf}\\[2pt]
+\footnotesize(f) ABILENE bandwidth
+\end{minipage}\\[4pt]
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_bars_geant_linear_delay.pdf}\\[2pt]
+\footnotesize(g) GEANT delay
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_bars_nobel_eu_delay.pdf}\\[2pt]
+\footnotesize(h) NOBEL-EU delay
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_bars_abilene_delay.pdf}\\[2pt]
+\footnotesize(i) ABILENE delay
+\end{minipage}
 \caption{Experiment I: Final performance bar chart comparison across three topologies. (a)--(c) mean reward (mean of 3 seeds, error bars $\pm$ std.\ dev.); (d)--(f) bandwidth service rate; (g)--(i) average delay (ms). Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$). Solid colored bars represent learned network variants (QoS-FiLM highlighted), gray hatched bars represent static baselines.}
 \label{fig:main_bars}
 \end{figure*}
@@ -121,12 +148,30 @@ To isolate the contribution of each architectural component, we design three var
 
 \begin{figure*}[t]
 \centering
-\subimg{p9b_groupA_geant_linear_eval.pdf}\hfill
-\subimg{p9b_groupA_nobel_eu_eval.pdf}\hfill
-\subimg{p9b_groupA_abilene_eval.pdf}\\[4pt]
-\subimg{p9b_groupA_geant_linear_bw.pdf}\hfill
-\subimg{p9b_groupA_nobel_eu_bw.pdf}\hfill
-\subimg{p9b_groupA_abilene_bw.pdf}
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupA_geant_linear_eval.pdf}\\[2pt]
+\footnotesize(a) GEANT eval reward
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupA_nobel_eu_eval.pdf}\\[2pt]
+\footnotesize(b) NOBEL-EU eval reward
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupA_abilene_eval.pdf}\\[2pt]
+\footnotesize(c) ABILENE eval reward
+\end{minipage}\\[4pt]
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupA_geant_linear_bw.pdf}\\[2pt]
+\footnotesize(d) GEANT eval bandwidth
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupA_nobel_eu_bw.pdf}\\[2pt]
+\footnotesize(e) NOBEL-EU eval bandwidth
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupA_abilene_bw.pdf}\\[2pt]
+\footnotesize(f) ABILENE eval bandwidth
+\end{minipage}
 \caption{Experiment II: Training curves of QoS-FiLM, noFiLM-Tf, and MLP on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence band). (a)--(c) Evaluation Reward; (d)--(f) Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$). Gray dashed lines indicate the final evaluation performance of classical baselines.}
 \label{fig:repr_training}
 \end{figure*}
@@ -173,12 +218,30 @@ We next compare two graph attention operators under the same FiLM framework. Tra
 
 \begin{figure*}[t]
 \centering
-\subimg{p9b_groupB_geant_linear_eval.pdf}\hfill
-\subimg{p9b_groupB_nobel_eu_eval.pdf}\hfill
-\subimg{p9b_groupB_abilene_eval.pdf}\\[4pt]
-\subimg{p9b_groupB_geant_linear_bw.pdf}\hfill
-\subimg{p9b_groupB_nobel_eu_bw.pdf}\hfill
-\subimg{p9b_groupB_abilene_bw.pdf}
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_geant_linear_eval.pdf}\\[2pt]
+\footnotesize(a) GEANT eval reward
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_nobel_eu_eval.pdf}\\[2pt]
+\footnotesize(b) NOBEL-EU eval reward
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_abilene_eval.pdf}\\[2pt]
+\footnotesize(c) ABILENE eval reward
+\end{minipage}\\[4pt]
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_geant_linear_bw.pdf}\\[2pt]
+\footnotesize(d) GEANT eval bandwidth
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_nobel_eu_bw.pdf}\\[2pt]
+\footnotesize(e) NOBEL-EU eval bandwidth
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_abilene_bw.pdf}\\[2pt]
+\footnotesize(f) ABILENE eval bandwidth
+\end{minipage}
 \caption{Experiment III: Training curves of QoS-FiLM, FiLM-GATv2, and noFiLM-GATv2 on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence band). (a)--(c) Evaluation Reward; (d)--(f) Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$).}
 \label{fig:conv_training}
 \end{figure*}
