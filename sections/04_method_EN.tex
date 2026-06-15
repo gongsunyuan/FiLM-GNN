@@ -1,4 +1,4 @@
-\section{Method}
+\section{Methodology}
 \label{sec:method}
 
 We formalize the online routing optimization of Section~\ref{sec:problem:objective} as an MDP (\S4.1), justify the choice of PPO as the training algorithm (\S4.2), and present the flow-aware QoS-FiLM architecture (\S4.3--4.5). All network dimensions, layer counts, and training coefficients are written symbolically here; their specific values are listed in Section~\ref{sec:exp:hyperparam}.
@@ -94,7 +94,7 @@ Training uses PPO, with advantages computed by generalized advantage estimation 
 where $\mathcal{L}^{\text{clip}}_\theta$ is the policy objective controlled by the clipping coefficient $\epsilon$, $c_v, c_e$ are value and entropy coefficients respectively, and advantages are normalized within each minibatch. The complete procedure is given in Algorithm~\ref{alg:ppo}.
 
 \begin{algorithm}[t]
-\caption{PPO Training for Flow-Aware QoS-FiLM}
+\caption{PPO Training for QoS-FiLM}
 \label{alg:ppo}
 \SetKwInOut{Input}{Input}
 \SetKwInOut{Output}{Output}

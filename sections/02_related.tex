@@ -5,7 +5,7 @@
 
 \subsection{传统 QoS 路由与流量工程}
 
-OSPF、ECMP、CSPF等经典协议基于静态链路权重做逐跳转发，在混合业务场景下缺乏差异化服务能力。Wang与Crowcroft奠定了 QoS 路由的约束优化框架\cite{Wang1996_QoSRouting}；Fortz 与 Thorup 揭示了基于权重优化的流量工程在动态需求下的局限性\cite{Fortz2000_TrafficEngineering}。Brundiers 等人研究了 Segment Routing 中环路对流量工程的增益，展示了灵活路径控制在动态负载均衡中的潜力\cite{Brundiers2021_Loops_SR_TE}，并进一步提出了中点优化方法以实现更细粒度的流量工程控制\cite{Brundiers2022_Midpoint_SR_INFOCOM}。这些方法的共同缺陷在于短视性:每步决策独立优化，无法在网络全局与序列长远视角下为异构流预留资源。当老鼠流与大象流共享链路时，静态策略往往在保障低时延与追求高吞吐之间顾此失彼。
+OSPF、ECMP、CSPF等经典协议基于静态链路权重做逐跳转发，在混合业务场景下缺乏差异化服务能力。Wang与Crowcroft奠定了 QoS 路由的约束优化框架\cite{Wang1996_QoSRouting}；Fortz 与 Thorup 揭示了基于权重优化的流量工程在动态需求下的局限性\cite{Fortz2000_TrafficEngineering}。Brundiers 等人研究了 Segment Routing 中环路对流量工程的增益，展示了灵活路径控制在动态负载均衡中的潜力\cite{Brundiers2021_Loops_SR_TE}，并进一步提出了中点优化方法以实现更细粒度的流量工程控制\cite{Brundiers2022_Midpoint_SR_INFOCOM}\textcolor{red}{这个文献编译出来格式有问题}。这些方法的共同缺陷在于短视性:每步决策独立优化，无法在网络全局与序列长远视角下为异构流预留资源。当老鼠流与大象流共享链路时，静态策略往往在保障低时延与追求高吞吐之间顾此失彼。
 
 \subsection{深度强化学习驱动的网络路由}
 

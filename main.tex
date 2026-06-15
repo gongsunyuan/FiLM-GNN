@@ -1,12 +1,7 @@
-% ============================================================
-% 单栏版 — 流感知 GNN 的 QoS 约束路由（中文正文，IEEE 数字制引用）
-% 编译: xelatex main_onecol.tex; bibtex main_onecol; xelatex×2
-% 与 main.tex 共用 sections/ 与 related_work.bib，仅版式改为单栏
-% ============================================================
 \documentclass[lettersize,journal]{IEEEtran}
 
-\usepackage{ctex}              % 中文支持 (xelatex)
 \usepackage{amsmath,amssymb}
+\usepackage[UTF8]{ctex}
 \usepackage{graphicx}
 \graphicspath{{figures/}}
 \usepackage{booktabs}
@@ -14,7 +9,8 @@
 \usepackage{multirow}
 \usepackage{url}
 \usepackage{xcolor}
-% 子图命令：图片下方自动编号 (a),(b),(c)...
+\usepackage[ruled,linesnumbered]{algorithm2e}
+% 子图命令：图片上方自动编号 (a),(b),(c)...
 \newcounter{subfigcnt}[figure]
 \renewcommand{\thesubfigcnt}{(\alph{subfigcnt})}
 \newcommand{\subimg}[1]{%
@@ -29,37 +25,34 @@
   \includegraphics[width=\linewidth]{#1}\\[2pt]
   \footnotesize\thesubfigcnt
   \end{minipage}}%
-\usepackage[ruled,linesnumbered]{algorithm2e}  % 训练流程伪代码
-%\usepackage{geometry}    % 单栏更宽，留合理边距
 
-\title{QoS-FiLM: Flow-Intent-Conditioned GNNs for Online QoS Routing}
+\title{QoS-FiLM: Intent-Conditioned GNNs for Per-Flow QoS Routing}
+
+\author{\IEEEauthorblockN{Anonymous Authors}
+\IEEEauthorblockA{Paper under double-blind review}}
 
 \begin{document}
 \bstctlcite{IEEEexample:BSTcontrol}
 \maketitle
 
 \begin{abstract}
-Modern backbone networks carry heterogeneous traffic where small flows demand strict latency guarantees and large flows seek high throughput. Existing online routing heuristics are myopic because they cannot foresee future arrivals; prevailing learning-based methods generate a single topology embedding for all flows regardless of their QoS intent, which limits their ability to differentiate routing under mixed services. We present QoS-FiLM, an encoder that conditions each message passing layer of a graph neural network (GNN) on the QoS intent of individual flows via Feature-wise Linear Modulation (FiLM). Identical substrate graphs are thereby embedded differently for heterogeneous flows. We formulate online per flow routing as a stochastic Markov decision process and train the policy with proximal policy optimization (PPO). Experiments on GEANT, NOBEL-EU, and ABILENE topologies show that QoS-FiLM outperforms several baselines in cumulative utility, bandwidth satisfaction ratio, and end to end latency. \textcolor{red}{这句结论得改一下，不完整，没有学习型方法}On GEANT, the mean reward improves by 0.121 over the strongest heuristic, the bandwidth score reaches 0.759, and the average delay drops to 112.9 ms. Ablation studies confirm that FiLM conditioning is essential and that it interacts strongly with the attention operator. Interpretability analysis verify that the encoder is highly sensitive to QoS intent, while the policy causally divides routing decisions based on flow type.
+Modern backbone networks carry heterogeneous traffic: small-bandwidth flows (e.g., latency-sensitive control traffic, remote desktop) demand strict latency guarantees and full bandwidth satisfaction, whereas large-bandwidth flows (e.g., distributed AI training, bulk backup) seek to maximize throughput and tolerate best-effort service. Existing online routing heuristics are myopic, as they cannot foresee future arrivals, while prevailing learning-based methods produce a single topology embedding shared by all flows regardless of their QoS intent, which limits their ability to differentiate routing under mixed services. We present QoS-FiLM, an encoder that conditions every message-passing layer of a graph neural network (GNN) on the QoS intent of individual flows through Feature-wise Linear Modulation (FiLM), so that an identical substrate graph is embedded differently for heterogeneous flows. We cast online per-flow routing as a stochastic Markov decision process and train the policy with proximal policy optimization (PPO). Across the GEANT, NOBEL-EU, and ABILENE topologies, QoS-FiLM surpasses both classical heuristics and learned ablative baselines in cumulative utility, bandwidth satisfaction ratio, and end-to-end latency. On GEANT, its mean reward improves by 0.167 over the strongest heuristic OnlineCSPF and by 0.219 over the no-FiLM variant noFiLM-Tf\textcolor{red}{这个方法是消融的方法，不是独立的learned baseline}, its bandwidth score reaches 0.759, and its average delay is reduced to 112.9 ms. Ablation studies confirm that FiLM conditioning is essential and that it interacts strongly with the attention operator, and interpretability analysis verifies that the encoder is highly sensitive to QoS intent while the policy discriminates routing decisions by flow type.
 \end{abstract}
 
 \begin{IEEEkeywords}
-online routing, graph neural networks, QoS differentiation, featurewise linear modulation, deep reinforcement learning
+online routing, graph neural networks, QoS differentiation, feature-wise linear modulation, deep reinforcement learning
 \end{IEEEkeywords}
 
-% ===== 章节（与 main.tex 共用同一批 section 文件） =====
-\input{sections/01_intro.tex}
-\input{sections/02_related.tex}
-\input{sections/03_problem.tex}
-\input{sections/04_method.tex}
-\input{sections/05_experiments.tex}
-\input{sections/06_conclusion.tex}
+% ===== English Sections =====
+\input{sections/01_intro_EN.tex}
+\input{sections/02_related_EN.tex}
+\input{sections/03_problem_EN.tex}
+\input{sections/04_method_EN.tex}
+\input{sections/05_experiments_EN.tex}
+\input{sections/06_conclusion_EN.tex}
 
 \bibliographystyle{IEEEtran}
 \bibliography{related_work}
 
 \end{document}
-流感知图神经网络 — 会议论文依赖: ctex (中文), IEEEtran 文档类conference%
-  {../experiments/p4_calibration/figures/pdf/}%
-  {../experiments/p6_interpretability/figures/pdf/}%
-  
-% IEEEtran 下中文标题/作者按会议结构，本轮：问题定义 / 方法（含MDP建模）/ 实验% % 
+
