@@ -8,7 +8,7 @@ We formalize the online routing optimization of Section~\ref{sec:problem:objecti
 
 We formalize the online routing optimization of Section~\ref{sec:problem:objective} as a Markov decision process $(\mathcal{S},\mathcal{A},P,r)$. The agent makes sequential decisions: at step $t$ it selects, for the $t$-th flow $\mathbf{f}_t$, a path from the candidate set $\mathcal{P}_t$.
 
-\textbf{State} $s_t\in\mathcal{S}$ consists of three parts:
+\textbf{State} $s_t\in\mathcal{S}$ \textcolor{red}{也写成元组形式?}consists of three parts:
 \begin{enumerate}
 \item \emph{Graph snapshot}: node features (marking the source and destination $o_t,v_t$ of the current flow) and link features $[d_e,\,c_e,\,b_e^{\text{res}}]$ (delay, capacity, residual bandwidth);
 \item \emph{Flow intent vector} $m_t=[\phi_t,\,\tilde b_t]$, where $\tilde b_t$ is the normalized bandwidth demand;
@@ -41,7 +41,7 @@ The encoder maps the graph snapshot in the state into node embeddings (i.e., a v
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{ENV-REACT.pdf}
-\caption{Overall QoS-FiLM architecture. Left: the flow-aware FiLM-GNN encoder; each layer generates FiLM parameters $(\gamma^{(\ell)}, \beta^{(\ell)})$ from the current flow's QoS intent vector $m_t = [\phi_t, \tilde b_t]$, reshaping node embeddings via residual modulation $x^{(\ell)} = (1+\gamma^{(\ell)})\odot\tilde x^{(\ell)}+\beta^{(\ell)}+x^{(\ell-1)}$, so that the same topology produces differentiated representations for different-intent flows. Right: the policy-value dual-head structure; the Actor Head outputs a Categorical action distribution via the PathPooler (LSTM $+$ LayerNorm) and the $K$-way scorer (KPathScorer); the Critic Head aggregates node embeddings via attention pooling and regresses the state value $V_\psi(s_t)$ through an MLP. Bottom right: the MDP closed loop and PPO training procedure.}
+\caption{\textcolor{red}{这个图是不是在本章最开始单独开一节来说明，图标题不要这么长，可以正文概述}Overall QoS-FiLM architecture. Left: the flow-aware FiLM-GNN encoder; each layer generates FiLM parameters $(\gamma^{(\ell)}, \beta^{(\ell)})$ from the current flow's QoS intent vector $m_t = [\phi_t, \tilde b_t]$, reshaping node embeddings via residual modulation $x^{(\ell)} = (1+\gamma^{(\ell)})\odot\tilde x^{(\ell)}+\beta^{(\ell)}+x^{(\ell-1)}$, so that the same topology produces differentiated representations for different-intent flows. Right: the policy-value dual-head structure; the Actor Head outputs a Categorical action distribution via the PathPooler (LSTM $+$ LayerNorm) and the $K$-way scorer (KPathScorer); the Critic Head aggregates node embeddings via attention pooling and regresses the state value $V_\psi(s_t)$ through an MLP. Bottom right: the MDP closed loop and PPO training procedure.}
 \label{fig:film_gnn_arch}
 \end{figure}
 
@@ -114,7 +114,7 @@ Randomly initialize $\theta,\psi$\;
       Clip gradients, update $\theta,\psi$ with Adam (learning rate $\eta$)\;
     }
   }
-  Update learning rate via cosine annealing (see Section~\ref{sec:exp:hyperparam} for scheduling parameters)\;
+  Update learning rate via cosine annealing\;
   \tcp{Evaluation and checkpointing}
   Run several rollouts with deterministic policy, record average reward; save best checkpoint\;
 }
