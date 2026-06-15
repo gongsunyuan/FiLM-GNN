@@ -12,7 +12,7 @@ We formalize the online routing optimization of Section~\ref{sec:problem:objecti
 \begin{enumerate}
 \item \emph{Graph snapshot}: node features (marking the source and destination $o_t,v_t$ of the current flow) and link features $[d_e,\,c_e,\,b_e^{\text{res}}]$ (delay, capacity, residual bandwidth);
 \item \emph{Flow intent vector} $m_t=[\phi_t,\,\tilde b_t]$, where $\tilde b_t$ is the normalized bandwidth demand;
-\item \emph{Candidate paths} $\mathcal{P}_t$ and their validity masks\textcolor{red}{需要一句话解释一下validity masks}.
+\item \emph{Candidate paths} $\mathcal{P}_t$ and their validity masks: each path is padded to a fixed tensor length, and the binary mask indicates which positions correspond to actual path nodes versus padding tokens.
 \end{enumerate}
 The observation contains only the current flow $\mathbf{f}_t$ and excludes future flows $\{\mathbf{f}_\tau\}_{\tau>t}$, consistent with the online causal constraint of Section~\ref{sec:problem:objective}.
 
@@ -31,7 +31,7 @@ The reward range is $[-1, 1]$. For elephant flows ($\phi_t\to 1$) the delay util
 \subsection{Choice of Training Algorithm}
 \label{sec:method:algo}
 
-Section~\ref{sec:problem:objective} argued that this problem is an online stochastic optimization over the demand distribution that requires a non-myopic policy. We adopt PPO as the training algorithm for several reasons: its stochastic policy naturally parameterizes the discrete choice among $K$ candidate paths through a Categorical distribution; its clipped objective keeps updates stable (accommodating the large difference in reward scales between the two flow types); on-policy data collection matches the online deployment setting; combined with GAE it achieves the long-range credit assignment that non-myopic decision-making demands; and, being model-free, it does not require explicit modeling of the transition stochasticity caused by the unknown arrival distribution $\mathcal{D}$.
+Section~\ref{sec:problem:objective} argued that this problem is an online stochastic optimization over the demand distribution that requires a non-myopic policy. We adopt PPO as the training algorithm for several reasons: its stochastic policy naturally parameterizes the discrete choice among $K$ candidate paths through a Categorical distribution; its clipped objective keeps updates stable (accommodating the large difference in reward scales between the two flow types); on-policy data collection matches the online deployment setting; combined with generalized advantage estimation (GAE) it achieves the long-range credit assignment that non-myopic decision-making demands; and, being model-free, it does not require explicit modeling of the transition stochasticity caused by the unknown arrival distribution $\mathcal{D}$.
 
 \subsection{Flow-Aware QoS-FiLM Encoder}
 \label{sec:method:encoder}
@@ -81,12 +81,12 @@ with link features $f$ as edge attributes), $\mathrm{LN}$ is layer normalization
 \end{equation}
 If the intent vector $m_t$ entered only at the final scorer, the paths would already have been pooled into fixed vectors, so intent information could no longer back-propagate to influence the topological representation, causing irreversible information loss.
 
-\textbf{Value Network.} The policy and value networks use independent encoders because their optimization objectives conflict: the policy must learn relative preferences among actions to support exploration, whereas the value function must regress scalar returns accurately. Sharing parameters would cause gradient interference and training instability. The value network aggregates its output node embeddings into a single graph-level vector through intent-conditioned attention pooling\textcolor{red}{这个说的不够清晰} (a learned weighted sum of node embeddings), which an MLP then regresses into a scalar state value $V_\psi(s_t)$.
+\textbf{Value Network.} The policy and value networks use independent encoders because their optimization objectives conflict: the policy must learn relative preferences among actions to support exploration, whereas the value function must regress scalar returns accurately. Sharing parameters would cause gradient interference and training instability. The value network pools its output node embeddings into a single graph-level vector via attention: each node's attention weight is computed from its embedding and the flow intent $m_t$, so that nodes relevant to the current flow's QoS requirements contribute more to the pooled representation; an MLP regresses this vector into a scalar state value $V_\psi(s_t)$.
 
 \subsection{Training Procedure}
 \label{sec:method:train}
 
-Training uses PPO, with advantages computed by generalized advantage estimation (GAE)\textcolor{red}{首次出现的地方写全称，后面全用缩写}. The loss combines the clipped policy objective $\mathcal{L}^{\text{clip}}_\theta$, the value loss $c_v\mathcal{L}^{\text{value}}_\psi$, and the negative entropy bonus $-c_e\mathcal{H}[\pi_\theta]$:
+Training uses PPO, with advantages computed by GAE. The loss combines the clipped policy objective $\mathcal{L}^{\text{clip}}_\theta$, the value loss $c_v\mathcal{L}^{\text{value}}_\psi$, and the negative entropy bonus $-c_e\mathcal{H}[\pi_\theta]$:
 \begin{equation}
 \mathcal{L}(\theta,\psi) = \mathcal{L}^{\text{clip}}_\theta + c_v\,\mathcal{L}^{\text{value}}_\psi - c_e\,\mathcal{H}[\pi_\theta],
 \label{eq:loss}
@@ -114,7 +114,7 @@ Randomly initialize $\theta,\psi$\;
       Clip gradients, update $\theta,\psi$ with Adam (learning rate $\eta$)\;
     }
   }
-  Update learning rate via cosine annealing\textcolor{red}{cosine annealing 的具体参数在实验部分有说明吗}\;
+  Update learning rate via cosine annealing (see Section~\ref{sec:exp:hyperparam} for scheduling parameters)\;
   \tcp{Evaluation and checkpointing}
   Run several rollouts with deterministic policy, record average reward; save best checkpoint\;
 }
