@@ -128,7 +128,7 @@ At $W\!=\!150$, QoS-FiLM outperforms all classical baselines on all three metric
 \includegraphics[width=\linewidth]{p9b_bars_abilene_delay.pdf}\\[2pt]
 \footnotesize(i) ABILENE delay
 \end{minipage}
-\caption{Experiment I: Final performance bar chart comparison across three topologies. (a)--(c) mean reward (mean of 3 seeds, error bars $\pm$ std.\ dev.); (d)--(f) bandwidth service rate; (g)--(i) average delay (ms). Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$). Solid colored bars represent learned network variants (QoS-FiLM highlighted), gray hatched bars represent static baselines.}
+\caption{Experiment I: Final performance bar chart comparison across three topologies. (a)--(c) mean reward (mean of 3 seeds, error bars $\pm$ std.\ dev.); (d)--(f) bandwidth service rate; (g)--(i) average delay (ms). Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$\textcolor{red}{这个为何不一致？}). \textcolor{red}{Solid colored bars represent learned network variants (QoS-FiLM highlighted), gray hatched bars represent static baselines.}}
 \label{fig:main_bars}
 \end{figure*}
 
@@ -229,7 +229,7 @@ By $\phi$ bucket (Table~\ref{tab:conv_w150_phi}), QoS-FiLM again exhibits the ``
 
 \begin{table}[t]
 \centering
-\caption{$\phi$-bucketed delay on GEANT.}
+\caption{$\phi$-bucketed delay on GEANT}
 \label{tab:conv_w150_phi}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccc}
@@ -259,7 +259,9 @@ MLP              & $0.568$ & $0.531$ & $0.431$ \\
 \end{tabular}
 \end{table}
 
-\textbf{Operator--Conditioning Synergy.}
+\subsubsection{Synergy Between FiLM and Attention Operator}
+\label{sec:exp:synergy}
+\textcolor{red}{只有1）没有2）}
 We further examine whether operator choice and conditioning interact synergistically. Adding the noFiLM-GATv2 variant forms a $2\times2$ comparison of operator $\times$ conditioning (Table~\ref{tab:synergy_2x2}; parenthesized values denote the FiLM gain $\Delta R$ on each operator).
 
 The key finding is that \emph{the gain from FiLM strongly depends on the underlying operator}. On TransformerConv, introducing FiLM yields a large improvement of $\Delta R\!=\!+0.219$ ($-0.098\!\to\!+0.121$); on GATv2, the FiLM gain is only $\Delta R\!=\!+0.007$ ($-0.104\!\to\!-0.097$), negligible in practice. The two dimensions are thus not independently additive but exhibit a strong interaction: the aforementioned difference in how link attributes are handled amplifies the gap in FiLM effectiveness. TransformerConv injects link attributes independently into the attention keys and message values, providing a high-quality, link-level differentiable foundation for FiLM's per-layer intent modulation. GATv2Conv, by contrast, mixes link attributes into node features, so even when FiLM injects flow intent accurately at each layer, the intent signal struggles to translate into effective path differentiation through the diluted link-quality representations. The combination of TransformerConv and FiLM is therefore not a simple superposition of two independent advantages but a joint product in which neither component can be omitted.

@@ -6,19 +6,19 @@ We formalize the online routing optimization of Section~\ref{sec:problem:objecti
 \subsection{Problem Formalization: MDP Modeling}
 \label{sec:method:mdp}
 
-We formalize the online routing optimization of Section~\ref{sec:problem:objective} as a Markov decision process $(\mathcal{S},\mathcal{A},P,r)$. The agent makes sequential decisions within a sequence: at step $t$ it selects, for the $t$-th flow $\mathbf{f}_t$, a path from the candidate set $\mathcal{P}_t$.
+We formalize the online routing optimization of Section~\ref{sec:problem:objective} as a Markov decision process $(\mathcal{S},\mathcal{A},P,r)$. The agent makes sequential decisions: at step $t$ it selects, for the $t$-th flow $\mathbf{f}_t$, a path from the candidate set $\mathcal{P}_t$.
 
 \textbf{State} $s_t\in\mathcal{S}$ consists of three parts:
 \begin{enumerate}
 \item \emph{Graph snapshot}: node features (marking the source and destination $o_t,v_t$ of the current flow) and link features $[d_e,\,c_e,\,b_e^{\text{res}}]$ (delay, capacity, residual bandwidth);
 \item \emph{Flow intent vector} $m_t=[\phi_t,\,\tilde b_t]$, where $\tilde b_t$ is the normalized bandwidth demand;
-\item \emph{Candidate paths} $\mathcal{P}_t$ and their validity masks.
+\item \emph{Candidate paths} $\mathcal{P}_t$ and their validity masks\textcolor{red}{需要一句话解释一下validity masks}.
 \end{enumerate}
 The observation contains only the current flow $\mathbf{f}_t$ and excludes future flows $\{\mathbf{f}_\tau\}_{\tau>t}$, consistent with the online causal constraint of Section~\ref{sec:problem:objective}.
 
 \textbf{Action} $a_t\in\mathcal{A}=\{0,1,\dots,K-1\}$ is a discrete choice, selecting the $a_t$-th candidate path $p_t=p_t^{a_t}$ from the $K$ candidates to carry the current flow.
 
-\textbf{Transition} must be distinguished at two levels. Given the current flow and the selected path, \emph{resource accounting is deterministic and known}: the residual bandwidth $b_e^{\text{res}}$ of the links along the path is reduced by $\hat b_t$ (Eq.~\eqref{eq:rho}, the actually allocated bandwidth) and the pointer advances. The next arriving flow $\mathbf{f}_{t+1}$, however, is drawn from the demand distribution $\mathcal{D}$, is invisible to the agent before it arrives, and is unaffected by the current action. The full state transition $P(s_{t+1}\mid s_t,a_t)$ is therefore not deterministic (given $s_t,a_t$, the next state $s_{t+1}$ is not unique); the stochasticity comes from the arrival of the next flow. This matches the ``deterministic accounting, unseen future'' structure described in Section~\ref{sec:problem:why_rl}.
+\textbf{Transition} must be distinguished at two levels. Given the current flow and the selected path, \emph{resource accounting is deterministic and known}: the residual bandwidth $b_e^{\text{res}}$ of the links along the path is reduced by $\hat b_t$ (Eq.~\eqref{eq:rho}, the actually allocated bandwidth) and the pointer advances. The next arriving flow $\mathbf{f}_{t+1}$, however, is drawn from the demand distribution $\mathcal{D}$, is invisible to the agent before it arrives, and is unaffected by the current action. The full state transition $P(s_{t+1}\mid s_t,a_t)$ is therefore not deterministic (given $s_t,a_t$, the next state $s_{t+1}$ is not unique); the stochasticity comes from the arrival of the next flow. This matches the ``deterministic accounting, unseen future'' structure described in Section~\ref{sec:problem:objective}.
 
 \textbf{Reward} is taken directly from the utility function $U(\mathbf{f}_t,p_t)$ of Section~\ref{sec:problem:objective} (Eq.~\eqref{eq:utility}), shifted by a constant $-1$ to narrow the reward range and facilitate value function learning:
 \begin{equation}
@@ -31,7 +31,7 @@ The reward range is $[-1, 1]$. For elephant flows ($\phi_t\to 1$) the delay util
 \subsection{Choice of Training Algorithm}
 \label{sec:method:algo}
 
-Section~\ref{sec:problem:objective} argued that this problem is an online stochastic optimization over the demand distribution that requires a non-myopic policy. We adopt proximal policy optimization (PPO) as the training algorithm for several reasons: its stochastic policy naturally parameterizes the discrete choice among $K$ candidate paths through a Categorical distribution; its clipped objective keeps updates stable (accommodating the large difference in reward scales between the two flow types); on-policy data collection matches the online deployment setting; combined with GAE it achieves the long-range credit assignment that non-myopic decision-making demands; and, being model-free, it does not require explicit modeling of the transition stochasticity caused by the unknown arrival distribution $\mathcal{D}$.
+Section~\ref{sec:problem:objective} argued that this problem is an online stochastic optimization over the demand distribution that requires a non-myopic policy. We adopt PPO as the training algorithm for several reasons: its stochastic policy naturally parameterizes the discrete choice among $K$ candidate paths through a Categorical distribution; its clipped objective keeps updates stable (accommodating the large difference in reward scales between the two flow types); on-policy data collection matches the online deployment setting; combined with GAE it achieves the long-range credit assignment that non-myopic decision-making demands; and, being model-free, it does not require explicit modeling of the transition stochasticity caused by the unknown arrival distribution $\mathcal{D}$.
 
 \subsection{Flow-Aware QoS-FiLM Encoder}
 \label{sec:method:encoder}
@@ -41,7 +41,7 @@ The encoder maps the graph snapshot in the state into node embeddings (i.e., a v
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{ENV-REACT.pdf}
-\caption{Overall FiLM-GNN architecture. Left: the flow-aware FiLM-GNN encoder; each layer generates FiLM parameters $(\gamma^{(\ell)}, \beta^{(\ell)})$ from the current flow's QoS intent vector $m_t = [\phi_t, \tilde b_t]$, reshaping node embeddings via residual modulation $x^{(\ell)} = (1+\gamma^{(\ell)})\odot\tilde x^{(\ell)}+\beta^{(\ell)}+x^{(\ell-1)}$, so that the same topology produces differentiated representations for different-intent flows. Right: the policy-value dual-head structure; the Actor Head outputs a Categorical action distribution via the PathPooler (LSTM $+$ LayerNorm) and the $K$-way scorer (KPathScorer); the Critic Head aggregates node embeddings via attention pooling and regresses the state value $V_\psi(s_t)$ through an MLP. Bottom right: the MDP closed loop and PPO training procedure.}
+\caption{Overall QoS-FiLM architecture. Left: the flow-aware FiLM-GNN encoder; each layer generates FiLM parameters $(\gamma^{(\ell)}, \beta^{(\ell)})$ from the current flow's QoS intent vector $m_t = [\phi_t, \tilde b_t]$, reshaping node embeddings via residual modulation $x^{(\ell)} = (1+\gamma^{(\ell)})\odot\tilde x^{(\ell)}+\beta^{(\ell)}+x^{(\ell-1)}$, so that the same topology produces differentiated representations for different-intent flows. Right: the policy-value dual-head structure; the Actor Head outputs a Categorical action distribution via the PathPooler (LSTM $+$ LayerNorm) and the $K$-way scorer (KPathScorer); the Critic Head aggregates node embeddings via attention pooling and regresses the state value $V_\psi(s_t)$ through an MLP. Bottom right: the MDP closed loop and PPO training procedure.}
 \label{fig:film_gnn_arch}
 \end{figure}
 
@@ -81,12 +81,12 @@ with link features $f$ as edge attributes), $\mathrm{LN}$ is layer normalization
 \end{equation}
 If the intent vector $m_t$ entered only at the final scorer, the paths would already have been pooled into fixed vectors, so intent information could no longer back-propagate to influence the topological representation, causing irreversible information loss.
 
-\textbf{Value Network.} The policy and value networks use independent encoders because their optimization objectives conflict: the policy must learn relative preferences among actions to support exploration, whereas the value function must regress scalar returns accurately. Sharing parameters would cause gradient interference and training instability. The value network aggregates its output node embeddings into a single graph-level vector through intent-conditioned attention pooling (a learned weighted sum of node embeddings), which an MLP then regresses into a scalar state value $V_\psi(s_t)$.
+\textbf{Value Network.} The policy and value networks use independent encoders because their optimization objectives conflict: the policy must learn relative preferences among actions to support exploration, whereas the value function must regress scalar returns accurately. Sharing parameters would cause gradient interference and training instability. The value network aggregates its output node embeddings into a single graph-level vector through intent-conditioned attention pooling\textcolor{red}{这个说的不够清晰} (a learned weighted sum of node embeddings), which an MLP then regresses into a scalar state value $V_\psi(s_t)$.
 
 \subsection{Training Procedure}
 \label{sec:method:train}
 
-Training uses PPO, with advantages computed by generalized advantage estimation (GAE). The loss combines the clipped policy objective $\mathcal{L}^{\text{clip}}_\theta$, the value loss $c_v\mathcal{L}^{\text{value}}_\psi$, and the negative entropy bonus $-c_e\mathcal{H}[\pi_\theta]$:
+Training uses PPO, with advantages computed by generalized advantage estimation (GAE)\textcolor{red}{首次出现的地方写全称，后面全用缩写}. The loss combines the clipped policy objective $\mathcal{L}^{\text{clip}}_\theta$, the value loss $c_v\mathcal{L}^{\text{value}}_\psi$, and the negative entropy bonus $-c_e\mathcal{H}[\pi_\theta]$:
 \begin{equation}
 \mathcal{L}(\theta,\psi) = \mathcal{L}^{\text{clip}}_\theta + c_v\,\mathcal{L}^{\text{value}}_\psi - c_e\,\mathcal{H}[\pi_\theta],
 \label{eq:loss}
@@ -114,7 +114,7 @@ Randomly initialize $\theta,\psi$\;
       Clip gradients, update $\theta,\psi$ with Adam (learning rate $\eta$)\;
     }
   }
-  Update learning rate via cosine annealing\;
+  Update learning rate via cosine annealing\textcolor{red}{cosine annealing 的具体参数在实验部分有说明吗}\;
   \tcp{Evaluation and checkpointing}
   Run several rollouts with deterministic policy, record average reward; save best checkpoint\;
 }
