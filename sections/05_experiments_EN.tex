@@ -20,7 +20,7 @@
 \includegraphics[width=\linewidth]{NOBEL_EU_topo.pdf}\\[2pt]
 \footnotesize(c)~NOBEL-EU
 \end{minipage}
-\caption{The three backbone topologies used in the experiments.\textcolor{red}{节点换个颜色吧，深蓝色}}
+\caption{The three backbone topologies used in the experiments.}
 \label{fig:topologies}
 \end{figure*}
 
@@ -142,9 +142,9 @@ To isolate the contribution of each architectural component, we design three var
 \item \textbf{QoS-FiLM} (per-layer intent injection): our method, which modulates node representations at every layer through the FiLM affine transformation of Eq.~\eqref{eq:film}.
 \end{itemize}
 
-\textbf{Message passing is foundational.} The MLP baseline scores worst on all three metrics (mean reward $-0.177$, BW Score $0.520$), with all flows degenerating into the same path slot (Table~\ref{tab:film_w150_bw} shows converging scores across categories, approximating OSPF-equivalent behavior\textcolor{red}{这个表里没有OSPF吧}). Without neighbor aggregation, the model cannot perceive the global distribution of link utilization and cannot differentiate routing across intents, confirming that graph structure information is indispensable for routing learning.
+\textbf{Message passing is foundational.} The MLP baseline scores worst on all three metrics (mean reward $-0.177$, BW Score $0.520$), with all flows degenerating into the same path slot (Table~\ref{tab:film_w150_bw} shows converging scores across categories, indicating undifferentiated routing that mirrors the single-path behavior of classical shortest-path heuristics; see OSPF in Fig.~\ref{fig:main_bars}). Without neighbor aggregation, the model cannot perceive the global distribution of link utilization and cannot differentiate routing across intents, confirming that graph structure information is indispensable for routing learning.
 
-\textbf{Per-layer intent injection (FiLM) brings significant gains.} Under the same GNN backbone, per-layer intent-injected QoS-FiLM ($+0.121$) significantly outperforms end-only intent-concatenated noFiLM-Tf ($-0.098$), with $\Delta R\!=\!+0.219$; BW Score improves by $+0.158$ ($0.759$ vs.\ $0.601$), and average delay drops from $157.8$ to $112.9$ (a reduction of $44.9$~ms). Fig.~\ref{fig:repr_training} shows the Eval Reward training curves of the two variants\textcolor{red}{不是三条线吗}. The disadvantage of noFiLM-Tf stems from concatenating intent information only at the end, which prevents applying $\gamma\!\cdot\! x+\beta$ modulation to per-layer node representations and hence reshaping the message-passing process according to flow intent. This trend is consistent across all three topologies (Fig.~\ref{fig:repr_training}): QoS-FiLM clearly leads noFiLM-Tf and MLP, and converges faster with smaller variance (NOBEL-EU: QoS-FiLM $-0.108$ vs.\ noFiLM-Tf $-0.282$; ABILENE: $+0.122$ vs.\ $+0.008$).
+\textbf{Per-layer intent injection (FiLM) brings significant gains.} Under the same GNN backbone, per-layer intent-injected QoS-FiLM ($+0.121$) significantly outperforms end-only intent-concatenated noFiLM-Tf ($-0.098$), with $\Delta R\!=\!+0.219$; BW Score improves by $+0.158$ ($0.759$ vs.\ $0.601$), and average delay drops from $157.8$ to $112.9$ (a reduction of $44.9$~ms). Fig.~\ref{fig:repr_training} shows the Eval Reward training curves of the three variants. The disadvantage of noFiLM-Tf stems from concatenating intent information only at the end, which prevents applying $\gamma\!\cdot\! x+\beta$ modulation to per-layer node representations and hence reshaping the message-passing process according to flow intent. This trend is consistent across all three topologies (Fig.~\ref{fig:repr_training}): QoS-FiLM clearly leads noFiLM-Tf and MLP, and converges faster with smaller variance (NOBEL-EU: QoS-FiLM $-0.108$ vs.\ noFiLM-Tf $-0.282$; ABILENE: $+0.122$ vs.\ $+0.008$).
 
 \begin{figure*}[t]
 \centering
@@ -259,9 +259,7 @@ MLP              & $0.568$ & $0.531$ & $0.431$ \\
 \end{tabular}
 \end{table}
 
-\subsubsection{Synergy Between FiLM and Attention Operator}
-\label{sec:exp:synergy}
-\textcolor{red}{只有1）没有2）}
+\textbf{Operator--Conditioning Synergy.}
 We further examine whether operator choice and conditioning interact synergistically. Adding the noFiLM-GATv2 variant forms a $2\times2$ comparison of operator $\times$ conditioning (Table~\ref{tab:synergy_2x2}).
 
 The key finding is that \emph{the gain from FiLM strongly depends on the underlying operator}. On TransformerConv, introducing FiLM yields a large improvement of $\Delta R\!=\!+0.219$ ($-0.098\!\to\!+0.121$); on GATv2, the FiLM gain is only $\Delta R\!=\!+0.007$ ($-0.104\!\to\!-0.097$), negligible in practice. The two dimensions are thus not independently additive but exhibit a strong interaction: the aforementioned difference in how link attributes are handled amplifies the gap in FiLM effectiveness. TransformerConv injects link attributes independently into the attention keys and message values, providing a high-quality, link-level differentiable foundation for FiLM's per-layer intent modulation. GATv2Conv, by contrast, mixes link attributes into node features, so even when FiLM injects flow intent accurately at each layer, the intent signal struggles to translate into effective path differentiation through the diluted link-quality representations. The combination of TransformerConv and FiLM is therefore not a simple superposition of two independent advantages but a joint product in which neither component can be omitted.
