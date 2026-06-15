@@ -218,7 +218,30 @@ We next compare two graph attention operators under the same FiLM framework. Tra
 
 \begin{figure*}[t]
 \centering
-
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_geant_linear_eval.pdf}\\[2pt]
+\footnotesize(a) GEANT eval reward
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_nobel_eu_eval.pdf}\\[2pt]
+\footnotesize(b) NOBEL-EU eval reward
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_abilene_eval.pdf}\\[2pt]
+\footnotesize(c) ABILENE eval reward
+\end{minipage}\\[4pt]
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_geant_linear_bw.pdf}\\[2pt]
+\footnotesize(d) GEANT eval bandwidth
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_nobel_eu_bw.pdf}\\[2pt]
+\footnotesize(e) NOBEL-EU eval bandwidth
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_groupB_abilene_bw.pdf}\\[2pt]
+\footnotesize(f) ABILENE eval bandwidth
+\end{minipage}
 \caption{Experiment III: Training curves of QoS-FiLM, FiLM-GATv2, and noFiLM-GATv2 on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence band). (a)--(c) Evaluation Reward; (d)--(f) Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$).}
 \label{fig:conv_training}
 \end{figure*}

@@ -21,7 +21,7 @@
 
 | Model | seed0 | seed1 | seed2 | Mean R | ±Std | BW Score | Avg Delay |
 |---|---|---|---|---|---|---|---|
-| **FiLM-Tf** | +0.124 | +0.124 | +0.117 | **+0.122** | 0.004 | **0.745** | **109.8** |
+| **QoS-FiLM** | +0.124 | +0.124 | +0.117 | **+0.122** | 0.004 | **0.745** | **109.8** |
 | noFiLM-Tf | +0.012 | +0.016 | -0.004 | +0.008 | 0.010 | 0.663 | 127.2 |
 | FiLM-GATv2 | +0.010 | -0.002 | -0.002 | +0.002 | 0.007 | 0.654 | 126.2 |
 | noFiLM-GATv2 | -0.003 | +0.009 | +0.001 | +0.002 | 0.007 | 0.652 | 124.0 |
@@ -39,12 +39,12 @@
 
 ## 主要观察
 
-- **FiLM-Tf 大幅领先**：+0.122，超过 OnlineCSPF (+0.041) 约 +0.081，σ=0.004（最稳定）
+- **QoS-FiLM 大幅领先**：+0.122，超过 OnlineCSPF (+0.041) 约 +0.081，σ=0.004（最稳定）
 - **FiLM 对 TransformerConv 增益显著**：+0.122 vs +0.008（Δ=+0.114）
 - **FiLM 对 GATv2 几乎无效**：+0.002 vs +0.002（Δ≈0），与 GEANT/NOBEL_EU 一致
-- **TransformerConv > GATv2**：FiLM-Tf vs FiLM-GATv2 差距 +0.120
+- **TransformerConv > GATv2**：QoS-FiLM vs FiLM-GATv2 差距 +0.120
 - **GNN 必要性**：所有 GNN 模型优于 MLP（-0.034）
-- ABILENE 拓扑小（12节点），baseline 本身较强（OnlineCSPF +0.041），FiLM-Tf 仍能超越
+- ABILENE 拓扑小（12节点），baseline 本身较强（OnlineCSPF +0.041），QoS-FiLM 仍能超越
 
 ## 数据文件
 
