@@ -126,3 +126,34 @@ Randomly initialize $\theta,\psi$\;
   Run several rollouts with deterministic policy, record average reward; save best checkpoint\;
 }
 \end{algorithm}
+
+Algorithm~\ref{alg:ppo} is structured as an outer-inner loop typical of on-policy actor-critic methods.
+The procedure receives the network topology $G$, the demand distribution $\mathcal{D}$, and hyperparameters as input (Line~1), and outputs the trained policy and value parameters $\theta,\psi$ (Line~2).
+Both parameter sets are randomly initialized at Line~3.
+The outer loop (Line~4) iterates until $T$ total frames have been collected from the environment.
+Each outer iteration proceeds through four core stages followed by scheduling and evaluation:
+
+\textbf{Collection (Lines~5--6).}
+Using the current stochastic policy $\pi_\theta$, the agent interacts with the environment for $B$ steps.
+At each step, the QoS-FiLM encoder produces a flow-aware graph embedding, the $K$-path scorer samples an action from the categorical distribution (Eq.~\eqref{eq:policy}), and the environment executes the selected routing decision—deducting the allocated bandwidth along the chosen path and returning the per-step reward $r_t$ (Eq.~\eqref{eq:reward}).
+These $B$ transitions are stored in an on-policy buffer for subsequent learning.
+
+\textbf{Advantage Estimation (Lines~7--8).}
+The value network $V_\psi$ estimates the expected return from each state.
+Generalized Advantage Estimation (GAE) combines these value estimates with the collected rewards to produce advantage estimates $\hat A_t$, which quantify how much better each action was than the baseline expectation.
+Return targets $\hat R_t$ are computed in parallel for value function regression.
+
+\textbf{Optimization (Lines~9--14).}
+The collected batch is reused for $E$ PPO epochs, with each epoch iterating over minibatches.
+Within each minibatch, advantages are first normalized to zero mean and unit variance (Line~12)—a standard stabilization technique for on-policy gradients.
+The clipped PPO loss $\mathcal{L}(\theta,\psi)$ (Eq.~\eqref{eq:loss}) is then computed and back-propagated.
+Gradients are clipped, and both parameter sets are updated via the Adam optimizer with learning rate $\eta$ (Line~14).
+The inner minibatch loop reuses data within each epoch, and the outer epoch loop repeats $E$ times to extract maximal learning signal from every collected batch.
+
+\textbf{Learning Rate Scheduling (Line~15).}
+After each outer iteration, the learning rate is decayed via cosine annealing, which gradually reduces the step size to promote stable convergence in later training stages.
+
+\textbf{Evaluation and Checkpointing (Lines~16--17).}
+At the end of each outer iteration, the agent is evaluated by running several deterministic rollouts (i.e., always selecting the action with the highest score, rather than sampling from the categorical distribution).
+The average reward over these rollouts serves as a validation metric.
+The parameter snapshot achieving the highest validation reward is saved as the best checkpoint, ensuring that the final model corresponds to the peak-performing policy rather than the final training iteration.
