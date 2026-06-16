@@ -52,7 +52,7 @@ Fig.~\ref{fig:film_gnn_arch} gives a high-level picture of the overall architect
 
 
 
-Let the hidden dimension be $h$. An MLP $\mathrm{MLP}_{\text{lift}}$ first lifts the raw node features to $h$ dimensions: $x^{(0)}=\mathrm{MLP}_{\text{lift}}(x)$. We then stack $L$ graph attention blocks.
+Let the hidden dimension be $h$. A Multi-Layer Perceptron (MLP) $\mathrm{MLP}_{\text{lift}}$ first lifts the raw node features to $h$ dimensions: $x^{(0)}=\mathrm{MLP}_{\text{lift}}(x)$. We then stack $L$ graph attention blocks.
 
 The $\ell$-th layer receives the current flow's intent vector $m_t$ and generates per-channel (per-dimension of the $h$-dimensional hidden vector) scaling and shifting parameters through two independent MLPs:
 \begin{align}
