@@ -24,7 +24,7 @@
 \label{fig:topologies}
 \end{figure*}
 
-\textbf{Sequence Length.} Each episode contains $W=150$ flows arriving sequentially, requiring the policy to maintain service quality under long-range credit assignment. Randomized topologies and flow generation ensure that the agent cannot memorize fixed paths and must instead make differentiated routing decisions based on the current link states and the intent of each flow.
+\textbf{Sequence Length.} Each episode contains $W=150$ flows arriving sequentially, requiring the policy to maintain service quality under long-range credit assignment. Randomized topologies and flow generation ensure that the agent cannot memorize fixed paths and must instead make differentiated routing decisions based on the current link states and the intent of each flow. For ABILENE, a smaller $W=50$ is used due to its fewer nodes and lower total capacity.
 
 \textbf{Baselines.} We compare against four classical routing strategies: OSPF (shortest hop count), ECMP (equal-cost multipath random), CSPF (online constrained shortest path), and RANDOM. All methods are evaluated on the same $200$ test traffic sequences (episodes) and averaged; the PPO policy uses deterministic actions (selecting the highest-probability candidate among the $K$ paths, without exploration sampling) to ensure reproducibility.
 
@@ -88,7 +88,7 @@ We first compare QoS-FiLM against classical routing algorithms to quantify the a
 
 At $W\!=\!150$, QoS-FiLM outperforms all classical baselines on all three metrics of mean reward, bandwidth satisfaction, and delay (Fig.~\ref{fig:main_bars}): its mean reward of $+0.121$ exceeds that of the strongest classical baseline CSPF ($-0.046$) by $+0.167$, its BW Score of $0.759$ exceeds CSPF's ($0.473$) by $0.286$, and its average delay drops from $130.0$ to $112.9$~ms. Although CSPF attains the lowest delay among the classical baselines ($125.9$), it does so at the expense of bandwidth satisfaction (BW Score only $0.473$), and its mean reward ($-0.046$) is far below QoS-FiLM's $+0.121$; delay alone therefore cannot reflect the global trade-off in service quality. This advantage holds across all three topologies (Fig.~\ref{fig:main_bars}): QoS-FiLM beats the respective strongest baseline CSPF on GEANT ($+0.121$ vs.\ $-0.046$), NOBEL-EU ($-0.108$ vs.\ $-0.183$), and ABILENE ($+0.122$ vs.\ $+0.041$), showing that the advantage of flow-aware representations generalizes across topologies. In Fig.~\ref{fig:main_bars}, solid colored bars represent learned network variants (QoS-FiLM highlighted), while gray hatched bars represent static baselines.
 
-\textbf{Source of Advantage: Non-Myopic Long-Range Resource Allocation.} Classical algorithms, including the ``stepwise optimal'' CSPF, make independent greedy decisions for each flow and never reserve capacity for subsequent flows; under the long sequence $W\!=\!150$, early arrivals deplete critical link capacity and leave later flows with no viable path. Bucketing by $\phi$ makes this clear: in the low-intent bucket ($\phi<0.2$, the most strictly constrained mouse flows), QoS-FiLM achieves a reward of $+0.315$, far above CSPF's $+0.070$; in the mid-intent bucket the two converge; and in the high-intent bucket all methods score low, an inherent resource-scarcity characteristic of the task. This confirms the argument of Section~\ref{sec:problem:why_rl}: routing is a sequential decision problem with long-range credit assignment, and CSPF, the representative of ``stepwise optimal,'' is systematically surpassed by the learned non-myopic policy.
+\textbf{Source of Advantage: Non-Myopic Long-Range Resource Allocation.} Classical algorithms, including the ``stepwise optimal'' CSPF, make independent greedy decisions for each flow and never reserve capacity for subsequent flows; under the long sequence $W\!=\!150$, early arrivals deplete critical link capacity and leave later flows with no viable path. Bucketing by $\phi$ makes this clear: in the low-intent bucket ($\phi<0.2$, the most strictly constrained mouse flows), QoS-FiLM achieves a reward of $+0.315$, far above CSPF's $+0.070$; in the mid-intent bucket the two converge; and in the high-intent bucket all methods score low, an inherent resource-scarcity characteristic of the task. This confirms the argument of Section~\ref{sec:problem:objective}: routing is a sequential decision problem with long-range credit assignment, and CSPF, the representative of ``stepwise optimal,'' is systematically surpassed by the learned non-myopic policy.
 
 \begin{figure*}[t]
 \centering
@@ -128,7 +128,7 @@ At $W\!=\!150$, QoS-FiLM outperforms all classical baselines on all three metric
 \includegraphics[width=\linewidth]{p9b_bars_abilene_delay.pdf}\\[2pt]
 \footnotesize(i) ABILENE delay
 \end{minipage}
-\caption{Experiment I: Final performance bar chart comparison across three topologies. (a)--(c) mean reward (mean of 3 seeds, error bars $\pm$ std.\ dev.); (d)--(f) bandwidth service rate; (g)--(i) average delay (ms). Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$; a shorter sequence is used because ABILENE has fewer nodes and lower total capacity).}
+\caption{Experiment I: Final performance comparison across three topologies. (a)--(c) mean reward (mean of 3 seeds, error bars $\pm$ std.\ dev.); (d)--(f) bandwidth service rate; (g)--(i) average delay (ms). Columns: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$).} 
 \label{fig:main_bars}
 \end{figure*}
 
@@ -172,15 +172,15 @@ To isolate the contribution of each architectural component, we design three var
 \includegraphics[width=\linewidth]{p9b_groupA_abilene_bw.pdf}\\[2pt]
 \footnotesize(f) ABILENE eval bandwidth
 \end{minipage}
-\caption{Experiment II: Training curves of QoS-FiLM, noFiLM-Tf, and MLP on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence band). (a)--(c) Evaluation Reward; (d)--(f) Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$). Gray dashed lines indicate the final evaluation performance of classical baselines.}
+\caption{Experiment II: Training curves of QoS-FiLM, noFiLM-Tf, and MLP on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence bands). (a)--(c) Evaluation Reward; (d)--(f) Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$). \textcolor{red}{Gray dashed lines indicate the final evaluation performance of classical baselines.}}
 \label{fig:repr_training}
 \end{figure*}
 
-Table~\ref{tab:film_w150_bucketed} presents the $\phi$-bucketed delay and bandwidth-category scores. QoS-FiLM attains a delay of only $77.6$ in the latency-sensitive bucket ($\phi<0.2$), a reduction of $68.4$~ms relative to noFiLM-Tf ($146.0$); in the latency-insensitive bucket ($\phi\geq 0.8$), by contrast, QoS-FiLM's delay ($290.0$) is actually higher than noFiLM-Tf's ($225.9$). This ``low-down, high-up'' pattern is the expected behavior of FiLM conditioning: the policy discriminates among $\phi$ values and actively transfers delay resources from high-intent flows to low-intent ones, achieving a marked service-quality improvement for the low-intent bucket at minimal cost. By bandwidth category, QoS-FiLM's BW Score on small flows reaches $0.932$ (noFiLM-Tf only $0.669$, gain $+0.263$) and likewise leads substantially on mid flows ($0.857$ vs.\ $0.614$); on big flows QoS-FiLM is slightly lower ($0.348$ vs.\ $0.483$), but it attains high scores on small and mid flows at a relatively small cost to big flows, a favorable overall trade-off.
+Table~\ref{tab:film_w150_bucketed} presents a combined view of the $\phi$-bucketed delay and bandwidth-category scores. QoS-FiLM attains a delay of only $77.6$ in the latency-sensitive bucket ($\phi<0.2$), a reduction of $68.4$~ms relative to noFiLM-Tf ($146.0$); in the latency-insensitive bucket ($\phi\geq 0.8$), by contrast, QoS-FiLM's delay ($290.0$) is actually higher than noFiLM-Tf's ($225.9$). This ``low-down, high-up'' pattern is the expected behavior of FiLM conditioning: the policy discriminates among $\phi$ values and actively transfers delay resources from high-intent flows to low-intent ones, achieving a marked service-quality improvement for the low-intent bucket at minimal cost. By bandwidth category, QoS-FiLM's BW Score on small flows reaches $0.932$ (noFiLM-Tf only $0.669$, gain $+0.263$) and likewise leads substantially on mid flows ($0.857$ vs.\ $0.614$); on big flows QoS-FiLM is slightly lower ($0.348$ vs.\ $0.483$), but it attains high scores on small and mid flows at a relatively small cost to big flows, a favorable overall trade-off.
 
 \begin{table}[t]
 \centering
-\caption{$\phi$-bucketed delay and bandwidth-category scores on GEANT.}
+\caption{$\phi$-bucketed delay on GEANT.}
 \label{tab:film_w150_bucketed}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccc|ccc}
@@ -195,7 +195,6 @@ MLP              & $156.3$ & $183.7$ & $220.2$ & $0.568$ & $0.531$ & $0.431$ \\
 \bottomrule
 \end{tabular}
 \end{table}
-
 
 \subsection{Experiment III: Attention Operator Selection}
 \label{sec:exp:conv}
@@ -228,18 +227,18 @@ We next compare two graph attention operators under the same FiLM framework. Tra
 \includegraphics[width=\linewidth]{p9b_groupB_abilene_bw.pdf}\\[2pt]
 \footnotesize(f) ABILENE eval bandwidth
 \end{minipage}
-\caption{Experiment III: Training curves of QoS-FiLM, FiLM-GATv2, and noFiLM-GATv2 on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence band). (a)--(c) Evaluation Reward; (d)--(f) Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$).}
+\caption{Experiment III: Training curves of QoS-FiLM, FiLM-GATv2, and noFiLM-GATv2 on three topologies (mean of 3 seeds $\pm$ std.\ dev.\ confidence bands). (a)--(c) Evaluation Reward; (d)--(f) Bandwidth Service Rate. Columns from left to right: GEANT ($W\!=\!150$), NOBEL-EU ($W\!=\!150$), ABILENE ($W\!=\!50$).}
 \label{fig:conv_training}
 \end{figure*}
 
 In terms of final policy quality (Fig.~\ref{fig:conv_training}), QoS-FiLM (TransformerConv$+$FiLM) is optimal in mean reward ($+0.121$) and bandwidth score ($0.759$), leading FiLM-GATv2 ($-0.097$, $0.596$) by a substantial margin, with a BW Score gap of $+0.163$. A paired $t$-test across $600$ evaluation episodes ($200$ episodes $\times$ $3$ seeds, pairing the per-episode mean reward on identical traffic sequences) confirms that QoS-FiLM significantly outperforms FiLM-GATv2 ($t\!\approx\!45.0$, $p\!<\!0.001$), with QoS-FiLM achieving the higher mean reward in $96.2\%$ of test episodes. The performance difference between the two operators ultimately stems from their fundamentally different treatment of link attributes (delay, capacity, residual bandwidth $f_e=[d_e,c_e,b_e^{\text{res}}]$). TransformerConv injects link attributes into both the attention key and the message value: the attention weight is $\alpha_{i,j}=\mathrm{softmax}((\mathbf{W}_3\mathbf{x}_i)^{\top}(\mathbf{W}_4\mathbf{x}_j+\mathbf{W}_6\mathbf{e}_{ij})/\sqrt{d})$ and the message is $\mathbf{W}_2\mathbf{x}_j+\mathbf{W}_6\mathbf{e}_{ij}$. The link feature $\mathbf{e}_{ij}$ modulates attention independently through a multiplicative interaction (inner product), so a high-residual-bandwidth link can receive higher attention weight without depending on target node features; at the same time, the link feature directly constitutes the message content, so aggregated information naturally carries link-quality signals. GATv2Conv~\cite{Brody2022_GATv2}, in contrast, mixes link and node features additively: $\alpha_{i,j}\propto\exp(\mathbf{a}^{\top}\mathrm{LeakyReLU}(\mathbf{\Theta}_s\mathbf{x}_i+\mathbf{\Theta}_t\mathbf{x}_j+\mathbf{\Theta}_e\mathbf{e}_{ij}))$. Link features are summed with the source and target node features before jointly entering the nonlinear activation, which strongly couples the link-quality signal with node features; the attention weight of a high-bandwidth link then depends heavily on the neighboring node representations, diluting the independent discriminative power of link attributes. In a routing scenario, link residual bandwidth is a hard constraint signal for path selection and should influence neighbor aggregation independently and directly; TransformerConv's dual-channel injection of link attributes (key + value) naturally suits this need, whereas GATv2Conv's additive mixing weakens the independent expressiveness of link quality.
 
-By $\phi$ bucket and bandwidth category (Table~\ref{tab:conv_w150_bucketed}), QoS-FiLM again exhibits the ``low-down, high-up'' pattern described in Section~\ref{sec:exp:repr}: the delay in the low-intent bucket is only $77.6$ (GATv2 is $135.2$, a reduction of $57.6$~ms), while the delay in the high-intent bucket, $290.0$, is slightly higher than GATv2's $253.5$. TransformerConv identifies the $\phi$ semantics of flows more accurately than GATv2 and transfers delay resources from high-intent to low-intent flows. By bandwidth category, QoS-FiLM's small/mid bandwidth scores ($0.932$/$0.857$) both lead FiLM-GATv2 ($0.667$/$0.618$) substantially, with slightly lower big-flow scores ($0.348$ vs.\ $0.456$), again attaining exceptionally high small/mid flow scores at a relatively small cost to big flows.
+By $\phi$ bucket and bandwidth category (Table~\ref{tab:conv_w150_buketed}), QoS-FiLM again exhibits the ``low-down, high-up'' pattern described in Section~\ref{sec:exp:repr}: the delay in the low-intent bucket is only $77.6$ (GATv2 is $135.2$, a reduction of $57.6$~ms), while the delay in the high-intent bucket, $290.0$, is slightly higher than GATv2's $253.5$. TransformerConv identifies the $\phi$ semantics of flows more accurately than GATv2 and transfers delay resources from high-intent to low-intent flows. By bandwidth category (Table~\ref{tab:conv_w150_bw}), QoS-FiLM's small/mid bandwidth scores ($0.932$/$0.857$) both lead FiLM-GATv2 ($0.667$/$0.618$) substantially, with slightly lower big-flow scores ($0.348$ vs.\ $0.456$), again attaining exceptionally high small/mid flow scores at a relatively small cost to big flows.
 
 \begin{table}[t]
 \centering
-\caption{$\phi$-bucketed delay and bandwidth-category scores on GEANT (Experiment III).}
-\label{tab:conv_w150_bucketed}
+\caption{$\phi$-bucketed delay and bandwidth-category scores on GEANT.}
+\label{tab:bucketed_combined}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccc|ccc}
 \toprule
@@ -278,18 +277,36 @@ $\Delta R$ (FiLM gain) & $\mathbf{+0.219}$ & $+0.007$ \\
 \end{tabular}
 \end{table}
 
-\subsubsection{Decomposing Graph Structure and Conditioning}
+\subsubsection{Graph Structure vs. FiLM Conditioning}
 \label{sec:exp:decompose}
-\textbf{Structuring the Contributions: Graph Structure vs.\ FiLM.} The $2\times2$ table isolates operator$\times$conditioning, but the MLP variant (FiLM retained, message passing removed) offers a complementary view: comparing MLP ($-0.177$, Table~\ref{tab:film_w150_bucketed}) against noFiLM-Tf ($-0.098$) approximately decomposes the contributions of graph structure and FiLM conditioning. The transition from MLP to noFiLM-Tf (adding message passing while removing FiLM) yields $\Delta R\!=\!+0.079$, capturing the pure benefit of graph structure; the further transition to QoS-FiLM (re-introducing FiLM on the TransformerConv backbone) yields $\Delta R\!=\!+0.219$. The two components play fundamentally different yet equally indispensable roles. Graph structure supplies the spatial priors of the topology (which links exist, how congestion propagates), without which FiLM has no meaningful canvas to act on; this is confirmed by MLP's poor performance ($-0.177$) despite retaining FiLM. FiLM conditioning, in turn, injects the per-flow intent semantics that tell the graph \emph{what to prioritize}, without which the GNN treats all flows identically; this is confirmed by noFiLM-Tf's limited performance ($-0.098$). Their combination reaches $+0.121$, far exceeding either component in isolation. The two are therefore not competing contributors but \emph{complementary necessities}: graph structure defines the search space, and FiLM governs how that space is navigated for each flow intent.
+\textbf{Decomposing the contributions.} The $2\times2$ table isolates operator$\times$conditioning, but the MLP variant (FiLM retained, message passing removed) offers a complementary view: comparing MLP ($-0.177$, Table~\ref{tab:film_w150_bucketed}) against noFiLM-Tf ($-0.098$) approximately decomposes the contributions of graph structure and FiLM conditioning. The transition from MLP to noFiLM-Tf (adding message passing while removing FiLM) yields $\Delta R\!=\!+0.079$, capturing the pure benefit of graph structure; the further transition to QoS-FiLM (re-introducing FiLM on the TransformerConv backbone) yields $\Delta R\!=\!+0.219$. The two components play fundamentally different yet equally indispensable roles. Graph structure supplies the spatial priors of the topology (which links exist, how congestion propagates), without which FiLM has no meaningful canvas to act on; this is confirmed by MLP's poor performance ($-0.177$) despite retaining FiLM. FiLM conditioning, in turn, injects the per-flow intent semantics that tell the graph \emph{what to prioritize}, without which the GNN treats all flows identically; this is confirmed by noFiLM-Tf's limited performance ($-0.098$). Their combination reaches $+0.121$, far exceeding either component in isolation. The two are therefore not competing contributors but \emph{complementary necessities}: graph structure defines the search space, and FiLM governs how that space is navigated for each flow intent.
 
 The parameter overhead of FiLM is an operator-independent constant of $+6{,}144$ (a relative overhead of only $+0.6\%\sim+2.0\%$, coming from the two intent$\to$hidden-dim linear layers $\mathrm{MLP}_\gamma,\mathrm{MLP}_\beta$). On the TransformerConv backbone, FiLM trades less than $1\%$ of parameters for an improvement of $\Delta R\!=\!+0.219$, an exceptionally high cost-effectiveness.
+
+\begin{figure*}[t]
+\centering
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_hidden_diff_film_tf.pdf}\\[2pt]
+\footnotesize(a) QoS-FiLM
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[width=\linewidth]{p9b_hidden_diff_nofilm_tf.pdf}\\[2pt]
+\footnotesize(b) noFiLM-Tf
+\end{minipage}
+\caption{PCA projection of hidden features for an extreme small flow and an extreme large flow under the same network state and (src, dst) pair.}
+\label{fig:embedding_separation}
+\end{figure*}
 
 \subsection{Experiment IV: Interpretability Analysis}
 \label{sec:exp:interp}
 
 To further understand the mechanism of FiLM conditioning, this section examines how FiLM and noFiLM-Tf differ in responding to flow intent from two perspectives: the \emph{representation level} and the \emph{decision level}.
 
+
+
 \textbf{Representation level: intent-driven hidden feature sensitivity.} Fixing the network topology and link utilization state, we inject flows with gradually varying QoS intent $\phi$ into the same (src, dst) node pair and observe the hidden features produced by the encoder. Over $8$ random network states and $\phi\!\in\!\{0.05,0.2,0.5,0.8,0.95\}$, we compute intent sensitivity (the total change in hidden representations caused by varying $\phi$ under the same state): the FiLM encoder reaches a sensitivity as high as $46.46$, whereas noFiLM-Tf reaches only $1.4\times10^{-6}$ (numerically zero), a difference of seven orders of magnitude (Table~\ref{tab:interp_repr}). Moreover, as $\phi$ increases from the baseline ($0.05\!\to\!0.95$), the drift of the FiLM representations increases monotonically ($0\!\to\!8.6\!\to\!25.8\!\to\!40.5\!\to\!46.5$), indicating that intent is smoothly and continuously encoded into node representations, while the drift of noFiLM-Tf stays at zero throughout. This confirms the ablation design at the architectural level (noFiLM indeed cannot perceive intent) and provides direct quantitative evidence that FiLM injects per-flow intent into node representations. Fig.~\ref{fig:embedding_separation} further shows the PCA projection of the hidden features from both encoders: FiLM's representations migrate continuously with $\phi$, whereas noFiLM-Tf's representations completely overlap.
+
+
 
 \begin{table}[t]
 \centering
@@ -306,19 +323,7 @@ noFiLM-Tf         & $1.4\times10^{-6}$ & All zero \\
 \end{tabular}
 \end{table}
 
-\begin{figure*}[t]
-\centering
-\begin{minipage}[t]{0.48\textwidth}\centering
-\includegraphics[width=\linewidth]{p9b_hidden_diff_film_tf.pdf}\\[2pt]
-\footnotesize(a) QoS-FiLM
-\end{minipage}\hfill
-\begin{minipage}[t]{0.48\textwidth}\centering
-\includegraphics[width=\linewidth]{p9b_hidden_diff_nofilm_tf.pdf}\\[2pt]
-\footnotesize(b) noFiLM-Tf
-\end{minipage}
-\caption{Comparison of hidden features for an extreme small flow and an extreme large flow under the same network state and (src, dst) pair.}
-\label{fig:embedding_separation}
-\end{figure*}
+
 
 \textbf{Decision level: intent-driven path selection diversity.} Differences at the representation level ultimately manifest as changes in routing behavior. Over $200$ test episodes comprising $460$ (src, dst) pairs, we compute the entropy of the path-slot selection distribution for both variants (in bits; higher entropy indicates more diverse selection and stronger differentiation by state and intent). FiLM's mean entropy is $2.235$, significantly higher than noFiLM-Tf's $1.962$ (paired $t\!\approx\!14.7$, highly significant); on $76\%$ of (src, dst) pairs FiLM's entropy is higher, and FiLM uses $10.4$ path slots on average versus only $7.9$ for noFiLM-Tf. The FiLM policy can therefore make finer-grained, more differentiated path selections based on current link states and each flow's intent, whereas noFiLM-Tf, unable to perceive intent, relies on state alone and concentrates its selection on fewer path slots. This corroborates the sensitivity evidence from the representation level: \emph{the intent that FiLM injects into representations drives more diverse path selection}, linking representation-level differentiation to decision-level behavior.
 
