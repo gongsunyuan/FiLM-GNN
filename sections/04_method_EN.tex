@@ -18,7 +18,7 @@ and \textbf{(iii)} a critic head that aggregates node embeddings via attention p
 \subsection{Problem Formalization: MDP Modeling}
 \label{sec:method:mdp}
 
-We formalize the online routing optimization of Section~\ref{sec:problem:objective} as a Markov decision process $(\mathcal{S},\mathcal{A},P,r)$. The agent makes sequential decisions: at step $t$ it selects, for the $t$-th flow $\mathbf{f}_t$, a path from the candidate set $\mathcal{P}_t$.
+The online routing optimization of Section~\ref{sec:problem:objective} is cast as an MDP $(\mathcal{S},\mathcal{A},P,r)$. At step $t$ the agent selects, for the $t$-th flow $\mathbf{f}_t$, a path from the candidate set $\mathcal{P}_t$.
 
 \textbf{State} $s_t \in \mathcal{S}$ consists of three parts:
 \begin{enumerate}
@@ -43,16 +43,12 @@ The reward range is $[-1, 1]$. For elephant flows ($\phi_t\to 1$) the delay util
 \subsection{Choice of Training Algorithm}
 \label{sec:method:algo}
 
-Section~\ref{sec:problem:objective} argued that this problem is an online stochastic optimization over the demand distribution that requires a non-myopic policy. We adopt PPO as the training algorithm for several reasons: its stochastic policy naturally parameterizes the discrete choice among $K$ candidate paths through a Categorical distribution; its clipped objective keeps updates stable (accommodating the large difference in reward scales between the two flow types); on-policy data collection matches the online deployment setting; combined with generalized advantage estimation (GAE) it achieves the long-range credit assignment that non-myopic decision-making demands; and, being model-free, it does not require explicit modeling of the transition stochasticity caused by the unknown arrival distribution $\mathcal{D}$.
+Section~\ref{sec:problem:objective} argued that this problem is an online stochastic optimization over the demand distribution that requires a non-myopic policy. We adopt PPO for several reasons. Its stochastic policy naturally parameterizes the discrete choice among $K$ paths via a Categorical distribution. Its clipped objective keeps updates stable, accommodating the large difference in reward scales between the two flow types. On-policy data collection matches the online deployment setting, and combined with generalized advantage estimation (GAE) it achieves the long-range credit assignment that non-myopic decision-making demands. Being model-free, it also avoids explicit modeling of the transition stochasticity caused by the unknown arrival distribution $\mathcal{D}$.
 
 \subsection{Flow-Aware QoS-FiLM Encoder}
 \label{sec:method:encoder}
 
-Fig.~\ref{fig:film_gnn_arch} gives a high-level picture of the overall architecture. The encoder maps the graph snapshot in the state into node embeddings (i.e., a vector representation for each node). The core idea is that every layer of message passing should ``know which flow is currently being routed,'' so that flows with different QoS intents yield different topological representations. We implement this conditioning with FiLM~\cite{Perez2018_FiLM}. Let the link feature vector be $f_e = [d_e,\, c_e,\, b_e^{\text{res}}] \in \mathbb{R}^3$, the concatenation of delay, capacity, and residual bandwidth.
-
-
-
-Let the hidden dimension be $h$. A Multi-Layer Perceptron (MLP) $\mathrm{MLP}_{\text{lift}}$ first lifts the raw node features to $h$ dimensions: $x^{(0)}=\mathrm{MLP}_{\text{lift}}(x)$. We then stack $L$ graph attention blocks.
+Fig.~\ref{fig:film_gnn_arch} gives a high-level picture of the overall architecture. The encoder maps the graph snapshot in the state into node embeddings (i.e., a vector representation for each node). The core idea is that every layer of message passing should ``know which flow is currently being routed,'' so that flows with different QoS intents yield different topological representations. We implement this conditioning with FiLM~\cite{Perez2018_FiLM}. Let the link feature vector be $f_e = [d_e,\, c_e,\, b_e^{\text{res}}] \in \mathbb{R}^3$, the concatenation of delay, capacity, and residual bandwidth. Let the hidden dimension be $h$. A Multi-Layer Perceptron (MLP) $\mathrm{MLP}_{\text{lift}}$ first lifts the raw node features to $h$ dimensions: $x^{(0)}=\mathrm{MLP}_{\text{lift}}(x)$. We then stack $L$ graph attention blocks.
 
 The $\ell$-th layer receives the current flow's intent vector $m_t$ and generates per-channel (per-dimension of the $h$-dimensional hidden vector) scaling and shifting parameters through two independent MLPs:
 \begin{align}
@@ -98,7 +94,7 @@ Training uses PPO, with advantages computed by GAE. The loss combines the clippe
 \mathcal{L}(\theta,\psi) = \mathcal{L}^{\text{clip}}_\theta + c_v\,\mathcal{L}^{\text{value}}_\psi - c_e\,\mathcal{H}[\pi_\theta],
 \label{eq:loss}
 \end{equation}
-where $\mathcal{L}^{\text{clip}}_\theta$ is the policy objective controlled by the clipping coefficient $\epsilon$, $c_v, c_e$ are value and entropy coefficients respectively, and advantages are normalized within each minibatch. The complete procedure is given in Algorithm~\ref{alg:ppo}.
+where $\mathcal{L}^{\text{clip}}_\theta$ is the policy objective controlled by the clipping coefficient $\epsilon$, $c_v, c_e$ are value and entropy coefficients respectively, and advantages are normalized within each minibatch. 
 
 \begin{algorithm}[t]
 \caption{PPO Training for QoS-FiLM}
@@ -127,6 +123,8 @@ Randomly initialize $\theta,\psi$\;
 }
 \end{algorithm}
 
-Algorithm~\ref{alg:ppo} follows the standard on-policy actor-critic pipeline: in each outer iteration, the agent collects $B$ rollout transitions by interacting with the environment using the stochastic policy $\pi_\theta$ (Lines~5--6), then computes advantage estimates $\hat A_t$ and return targets $\hat R_t$ via GAE (Lines~7--8).
-The collected data is reused for $E$ PPO epochs with minibatch updates, optimizing the clipped surrogate loss $\mathcal{L}(\theta,\psi)$ defined in Eq.~\eqref{eq:loss} (Lines~9--14).
-Finally, the learning rate is decayed via cosine annealing (Line~15), and the best checkpoint is periodically saved based on deterministic evaluation rollouts (Lines~16--17).
+
+The complete procedure is given in Algorithm~\ref{alg:ppo}. At each iteration, the agent collects $B$ rollout transitions by interacting with the environment using the stochastic policy $\pi_\theta$ (Lines~5--6), then computes advantage estimates $\hat A_t$ and return targets $\hat R_t$ via GAE (Lines~7--8).
+The collected data is reused for $E$ PPO epochs with minibatch updates, optimizing the clipped surrogate loss $\mathcal{L}(\theta,\psi)$ defined in Eq.~\eqref{eq:loss} (Lines~9--14). Finally, the learning rate is decayed via cosine annealing (Line~15), and the best checkpoint is periodically saved based on deterministic evaluation rollouts \textcolor{red}{(Lines~16--17)}.
+
+
