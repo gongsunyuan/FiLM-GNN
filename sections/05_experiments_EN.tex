@@ -10,7 +10,7 @@ We detail the experimental setup below.
 \subsection{Experimental Setup}
 \label{sec:exp:setup}
 
-\textbf{Topology and Traffic.} \textcolor{red}{The experiments are conducted on three backbone topology (Fig.~\ref{fig:topologies}).} To train a policy that generalizes across network states, all link attributes are randomly regenerated at the start of each episode: bandwidth is sampled from $\text{Uniform}[30,100]$ and delay from $\text{Uniform}[1,20]$. Traffic generation treats the QoS intent $\phi$ as the dominant variable: $\phi$ is drawn from a flipped Pareto distribution ($\alpha\!=\!0.2$), so that the overwhelming majority of flows fall in the low-$\phi$ region (mouse flows with strict bandwidth and delay constraints) and only a small number are high-$\phi$ flows (elephant flows with relaxed constraints). The bandwidth demand $b$ is obtained from $\phi$ through a positively correlated linear mapping (Eq.~\eqref{eq:bw_gen}), with $b_{\text{max}}\!=\!40$ and a Gaussian noise standard deviation equal to $0.15$ times the span, so that $\phi$ and $b$ remain strongly positively correlated (Pearson $r\!\approx\!0.90$) yet not fully deterministic, with $\phi$ still carrying information independent of $b$.
+\textbf{Topology and Traffic.} The experiments are conducted on three backbone topologies (Fig.~\ref{fig:topologies}). To train a policy that generalizes across network states, all link attributes are randomly regenerated at the start of each episode: bandwidth is sampled from $\text{Uniform}[30,100]$ and delay from $\text{Uniform}[1,20]$. Traffic generation treats the QoS intent $\phi$ as the dominant variable: $\phi$ is drawn from a flipped Pareto distribution ($\alpha\!=\!0.2$), so that the overwhelming majority of flows fall in the low-$\phi$ region (mouse flows with strict bandwidth and delay constraints) and only a small number are high-$\phi$ flows (elephant flows with relaxed constraints). The bandwidth demand $b$ is obtained from $\phi$ through a positively correlated linear mapping (Eq.~\eqref{eq:bw_gen}), with $b_{\text{max}}\!=\!40$ and a Gaussian noise standard deviation equal to $0.15$ times the span, so that $\phi$ and $b$ remain strongly positively correlated (Pearson $r\!\approx\!0.90$) yet not fully deterministic, with $\phi$ still carrying information independent of $b$.
 
 \begin{figure*}[t]
 \centering
@@ -26,7 +26,7 @@ We detail the experimental setup below.
 \includegraphics[width=\linewidth]{NOBEL_EU_topo.pdf}\\[2pt]
 \footnotesize(c)~NOBEL-EU
 \end{minipage}
-\caption{Three backbone topologies: \textcolor{red}{(a)~ABILENE (**nodes, **links); (b)~GEANT(nodes, links); (c)~NOBEL-EU (nodes, links)}}
+\caption{Three backbone topologies: (a)~ABILENE (12 nodes, 15 links); (b)~GEANT (22 nodes, 36 links); (c)~NOBEL-EU (28 nodes, 41 links).}
 \label{fig:topologies}
 \end{figure*}
 
