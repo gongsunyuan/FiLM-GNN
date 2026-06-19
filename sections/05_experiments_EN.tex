@@ -1,10 +1,11 @@
 \section{Experiments}
 \label{sec:exp}
-We systematically evaluate QoS-FiLM in three aspects:
-\textbf{(i)} FiLM's effectiveness versus learned and heuristic baselines (\S~\ref{sec:expablation}),
-\textbf{(ii)} sensitivity to GNN operators and architectural choices (\S~\ref{sec:operator_comparison}), and
-\textbf{(iii)} scalability and differentiated routing capability (\S~\ref{sec:scalability}).
-We begin with the experimental setup (\S~\ref{sec:exp:setup}).
+We systematically evaluate QoS-FiLM on three backbone topologies (GEANT, NOBEL-EU, ABILENE) through four experiments.
+Experiment~I (\S\ref{sec:exp:main}) compares QoS-FiLM against classical routing heuristics (OSPF, ECMP, CSPF, RANDOM) and demonstrates that flow-aware non-myopic resource allocation substantially improves service quality, particularly for latency-sensitive mouse flows.
+Experiment~II (\S\ref{sec:exp:repr}) ablates the two core architectural components---message passing and per-layer FiLM conditioning---and shows that they are complementary necessities: graph structure supplies the topological search space while FiLM governs how that space is navigated per flow intent, together yielding $\Delta R\!=\!+0.219$ over the unconditioned GNN.
+Experiment~III (\S\ref{sec:exp:conv}) examines two graph attention operators and reveals a strong interaction between operator choice and conditioning: TransformerConv's independent dual-channel injection of link attributes amplifies the FiLM gain to $+0.219$, whereas GATv2Conv's additive mixing suppresses it to $+0.007$.
+Experiment~IV (\S\ref{sec:exp:interp}) provides mechanistic evidence that FiLM continuously encodes intent into hidden representations and drives more diverse, differentiated path selection.
+We detail the experimental setup below.
 
 \subsection{Experimental Setup}
 \label{sec:exp:setup}
