@@ -123,7 +123,7 @@ Randomly initialize $\theta,\psi$\;
 \end{algorithm}
 
 
-The complete procedure is given in Algorithm~\ref{alg:ppo}. At each iteration, the agent collects $B$ rollout transitions by interacting with the environment using the stochastic policy $\pi_\theta$ (Lines~5--6), then computes advantage estimates $\hat A_t$ and return targets $\hat R_t$ via GAE (Lines~7--8).
-The collected data is reused for $E$ PPO epochs with minibatch updates, optimizing the clipped surrogate loss $\mathcal{L}(\theta,\psi)$ defined in Eq.~\eqref{eq:loss} (Lines~9--14). Finally, the learning rate is decayed via cosine annealing (Line~15), and the best checkpoint is periodically saved based on deterministic evaluation rollouts \textcolor{red}{(Lines~16--17)}.
+The complete procedure is given in Algorithm~\ref{alg:ppo}. At each iteration, the agent collects $B$ rollout transitions by interacting with the environment using the stochastic policy $\pi_\theta$ (Step~3), then computes advantage estimates $\hat A_t$ and return targets $\hat R_t$ via GAE (Step~4).
+The collected data is reused for $E$ PPO epochs with minibatch updates, optimizing the clipped surrogate loss $\mathcal{L}(\theta,\psi)$ defined in Eq.~\eqref{eq:loss} (Steps~5--11). Finally, the learning rate is decayed via cosine annealing (Step~12), and the best checkpoint is periodically saved based on deterministic evaluation rollouts (Step~13).
 
 
