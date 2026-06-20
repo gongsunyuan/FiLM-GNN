@@ -1,11 +1,6 @@
 \section{Experiments}
 \label{sec:exp}
-We systematically evaluate QoS-FiLM on three backbone topologies (GEANT, NOBEL-EU, ABILENE) through four experiments.
-Experiment~I (\S\ref{sec:exp:main}) compares QoS-FiLM against classical routing heuristics (OSPF, ECMP, CSPF, RANDOM) and demonstrates that flow-aware non-myopic resource allocation substantially improves service quality, particularly for latency-sensitive mouse flows.
-Experiment~II (\S\ref{sec:exp:repr}) ablates the two core architectural components---message passing and per-layer FiLM conditioning---and shows that they are complementary necessities: graph structure supplies the topological search space while FiLM governs how that space is navigated per flow intent, together yielding $\Delta R\!=\!+0.219$ over the unconditioned GNN.
-Experiment~III (\S\ref{sec:exp:conv}) examines two graph attention operators and reveals a strong interaction between operator choice and conditioning: TransformerConv's independent dual-channel injection of link attributes amplifies the FiLM gain to $+0.219$, whereas GATv2Conv's additive mixing suppresses it to $+0.007$.
-Experiment~IV (\S\ref{sec:exp:interp}) provides mechanistic evidence that FiLM continuously encodes intent into hidden representations and drives more diverse, differentiated path selection.
-We detail the experimental setup below.
+We evaluate QoS-FiLM through four experiments: comparison with classical and learned baselines (\S\ref{sec:exp:main}), ablation of message passing and FiLM conditioning (\S\ref{sec:exp:repr}), GNN operator selection and synergy analysis (\S\ref{sec:exp:conv}), and interpretability validation (\S\ref{sec:exp:interp}). We begin with the experimental setup and hyperparameters (\S\ref{sec:exp:setup}--\S\ref{sec:exp:hyperparam}).
 
 \subsection{Experimental Setup}
 \label{sec:exp:setup}
@@ -14,15 +9,15 @@ We detail the experimental setup below.
 
 \begin{figure*}[t]
 \centering
-\begin{minipage}[t]{0.32\textwidth}\centering
+\begin{minipage}[t]{0.3\textwidth}\centering
 \includegraphics[width=\linewidth]{ABILENE_topo.pdf}\\[2pt]
 \footnotesize(a)~ABILENE
 \end{minipage}\hfill
-\begin{minipage}[t]{0.32\textwidth}\centering
+\begin{minipage}[t]{0.3\textwidth}\centering
 \includegraphics[width=\linewidth]{GEANT_topo.pdf}\\[2pt]
 \footnotesize(b)~GEANT
 \end{minipage}\hfill
-\begin{minipage}[t]{0.32\textwidth}\centering
+\begin{minipage}[t]{0.3\textwidth}\centering
 \includegraphics[width=\linewidth]{NOBEL_EU_topo.pdf}\\[2pt]
 \footnotesize(c)~NOBEL-EU
 \end{minipage}
@@ -32,7 +27,7 @@ We detail the experimental setup below.
 
 \textbf{Sequence Length.} Each episode contains $W=150$ flows arriving sequentially, requiring the policy to maintain service quality under long-range credit assignment. Randomized topologies and flow generation ensure that the agent cannot memorize fixed paths and must instead make differentiated routing decisions based on the current link states and the intent of each flow. For ABILENE, a smaller $W=50$ is used due to its fewer nodes and lower total capacity.
 
-\textbf{Baselines.} We compare against four classical routing strategies: OSPF (shortest hop count), ECMP (equal-cost multipath random), CSPF, \textcolor{red}{and RANDOM}. All methods are evaluated on the same $200$ test traffic sequences (episodes) and averaged; the PPO policy uses deterministic actions (selecting the highest-probability candidate among the $K$ paths, without exploration sampling) to ensure reproducibility.
+\textbf{Baselines.} We compare against five methods spanning two categories. Classical routing algorithms: OSPF, ECMP, and CSPF. Learned routing agents: (i)~noFiLM-Tf, a standard GNN-based DRL policy with TransformerConv message passing and no flow conditioning. This architecture is representative of the GNN-based DRL paradigm. (ii)~MLP, a non-graph MLP policy that tests whether graph structure awareness is necessary. noFiLM-Tf shares identical network depth, width, and training protocol with QoS-FiLM, ensuring that any performance gap is attributable to FiLM conditioning rather than architectural differences. All methods are evaluated on the same $200$ test traffic sequences (episodes); learned agents use deterministic actions (selecting the highest-probability candidate among the $K$ paths) to ensure reproducibility.
 
 \textbf{Evaluation Metrics.} We report Mean Reward (Mean $R$), Bandwidth Satisfaction Score (BW Score, the mean of the per-flow bandwidth satisfaction ratios $\rho_t$), and Average End-to-End Delay (Avg Delay, the mean of the effective delays $\hat D_t$ (Eq.~\eqref{eq:delay}) across all flows). Bandwidth scores are further broken down by flow category (small mouse / mid / big elephant) to examine whether the policy differentiates its treatment by QoS intent.
 
@@ -87,12 +82,13 @@ Category & Hyperparameter & Value \\
 \end{tabular}
 \end{table}
 
-\subsection{Experiment I: Comparison with Classical Routing}
+\subsection{Experiment I: Comparison with Classical and Learned Baselines}
 \label{sec:exp:main}
 
-We first compare QoS-FiLM against classical routing algorithms to quantify the advantage of flow-aware representations. To isolate the ``learned policy vs.\ classical algorithm'' comparison, this section contrasts QoS-FiLM with the four classical baselines; ablation comparisons against the noFiLM-Tf and MLP (no message-passing) variants are deferred to Section~\ref{sec:exp:repr}.
+%We first compare QoS-FiLM against classical routing algorithms to quantify the advantage of flow-aware representations. To isolate the ``learned policy vs.\ classical algorithm'' comparison, this section contrasts QoS-FiLM with the four classical baselines; ablation comparisons against the noFiLM-Tf and MLP (no message-passing) variants are deferred to Section~\ref{sec:exp:repr}.
+This experiment assesses whether FiLM conditioning improves upon both classical heuristics and the learned baseline noFiLM-Tf, which shares our architectural backbone.
 
-At $W\!=\!150$, QoS-FiLM outperforms all classical baselines on all three metrics of mean reward, bandwidth satisfaction, and delay (Fig.~\ref{fig:main_bars}): its mean reward of $+0.121$ exceeds that of the strongest classical baseline CSPF ($-0.046$) by $+0.167$, its BW Score of $0.759$ exceeds CSPF's ($0.473$) by $0.286$, and its average delay drops from $125.9$ to $112.9$~ms. Although CSPF attains the lowest delay among the classical baselines ($125.9$), it does so at the expense of bandwidth satisfaction (BW Score only $0.473$), and its mean reward ($-0.046$) is far below QoS-FiLM's $+0.121$; delay alone therefore cannot reflect the global trade-off in service quality. This advantage holds across all three topologies: QoS-FiLM beats the respective strongest baseline CSPF on GEANT ($+0.121$ vs.\ $-0.046$), NOBEL-EU ($-0.108$ vs.\ $-0.183$), and ABILENE ($+0.122$ vs.\ $+0.041$), showing that the advantage of flow-aware representations generalizes across topologies. %In Fig.~\ref{fig:main_bars}, solid colored bars represent learned network variants (QoS-FiLM highlighted), while gray hatched bars represent static baselines.
+At $W\!=\!150$, QoS-FiLM outperforms all baselines on all three metrics of mean reward, bandwidth satisfaction, and delay (Fig.~\ref{fig:main_bars}): its mean reward of $+0.121$ exceeds that of the strongest classical baseline CSPF ($-0.046$) by $+0.167$, its BW Score of $0.759$ exceeds CSPF's ($0.473$) by $0.286$, and its average delay drops from $125.9$ to $112.9$~ms. Although CSPF attains the lowest delay among the classical baselines ($125.9$), it does so at the expense of bandwidth satisfaction (BW Score only $0.473$), and its mean reward ($-0.046$) is far below QoS-FiLM's $+0.121$; delay alone therefore cannot reflect the global trade-off in service quality. This advantage holds across all three topologies: QoS-FiLM beats the respective strongest baseline CSPF on GEANT ($+0.121$ vs.\ $-0.046$), NOBEL-EU ($-0.108$ vs.\ $-0.183$), and ABILENE ($+0.122$ vs.\ $+0.041$), showing that \textcolor{blue}{flow-aware representations yield consistent gains without topology-specific hyperparameter tuning}. %In Fig.~\ref{fig:main_bars}, solid colored bars represent learned network variants (QoS-FiLM highlighted), while gray hatched bars represent static baselines.
 
 \textbf{Source of Advantage: Non-Myopic Long-Range Resource Allocation.} Classical algorithms, including the ``stepwise optimal'' CSPF, make independent greedy decisions for each flow and never reserve capacity for subsequent flows; under the long sequence $W\!=\!150$, early arrivals deplete critical link capacity and leave later flows with no viable path. Bucketing by $\phi$ makes this clear: in the low-intent bucket ($\phi<0.2$, the most strictly constrained mouse flows), QoS-FiLM achieves a reward of $+0.315$, far above CSPF's $+0.070$; in the mid-intent bucket the two converge; and in the high-intent bucket all methods score low, an inherent resource-scarcity characteristic of the task. This confirms the argument of Section~\ref{sec:problem:objective}: routing is a sequential decision problem with long-range credit assignment, and CSPF, the representative of ``stepwise optimal,'' is systematically surpassed by the learned non-myopic policy.
 
@@ -140,7 +136,7 @@ At $W\!=\!150$, QoS-FiLM outperforms all classical baselines on all three metric
 
 \subsection{Experiment II: Ablation on Message Passing and Intent Conditioning}
 \label{sec:exp:repr}
-Prior learned routing methods encode topology through GNNs and select paths via DRL, but without per-flow conditioning. The ablation therefore includes an unconditioned counterpart that is architecturally identical to QoS-FiLM except for the absence of FiLM modulation, so as to isolate the contribution of conditioning against the strongest instantiation of this paradigm. Direct comparison with individual prior methods is further complicated by the lack of publicly available implementations and differences in problem formulation.
+The noFiLM-Tf baseline, introduced in \S\ref{sec:exp:main} as the representative GNN-based DRL method, simultaneously serves as the ablation counterpart to QoS-FiLM: the two are architecturally identical except that noFiLM-Tf removes FiLM conditioning and concatenates intent only at the final scorer. This controlled design isolates the contribution of FiLM from confounding factors such as model capacity or training variance.
 
 To decompose this contribution further, we design three variants along the progressive path ``no graph structure $\to$ graph structure but no flow awareness $\to$ graph structure with flow awareness'' (Fig.~\ref{fig:main_bars}), all sharing the same TransformerConv backbone and hyperparameters and differing only in their representational mechanism:
 \begin{itemize}
@@ -149,7 +145,7 @@ To decompose this contribution further, we design three variants along the progr
 \item \textbf{QoS-FiLM} (per-layer intent injection): our method, which modulates node representations at every layer through the FiLM affine transformation of Eq.~\eqref{eq:film}.
 \end{itemize}
 
-\textbf{Message passing is foundational.} The MLP baseline scores worst on all three metrics (mean reward $-0.177$, BW Score $0.520$), with all flows degenerating into the same path slot (Table~\ref{tab:film_w150_bucketed} shows converging scores across categories, indicating undifferentiated routing that mirrors the single-path behavior of classical shortest-path heuristics; see OSPF in Fig.~\ref{fig:main_bars}). Without neighbor aggregation, the model cannot perceive the global distribution of link utilization and cannot differentiate routing across intents, confirming that graph structure information is indispensable for routing learning.
+\textbf{Message passing is foundational.} The MLP baseline scores worst on all three metrics (mean reward $-0.177$, BW Score $0.520$), with all flows degenerating into the same \textcolor{red}{path slot} (Table~\ref{tab:film_w150_bucketed} shows converging scores across categories, indicating undifferentiated routing that mirrors the single-path behavior of classical shortest-path heuristics; see OSPF in Fig.~\ref{fig:main_bars}). Without neighbor aggregation, the model cannot perceive the global distribution of link utilization and cannot differentiate routing across intents, confirming that graph structure information is indispensable for routing learning.
 
 \textbf{Per-layer intent injection (FiLM) brings significant gains.} Under the same GNN backbone, per-layer intent-injected QoS-FiLM ($+0.121$) significantly outperforms end-only intent-concatenated noFiLM-Tf ($-0.098$), with $\Delta R\!=\!+0.219$; BW Score improves by $+0.158$ ($0.759$ vs.\ $0.601$), and average delay drops from $157.8$ to $112.9$ (a reduction of $44.9$~ms). Fig.~\ref{fig:repr_training} shows the Eval Reward training curves of the three variants. The disadvantage of noFiLM-Tf stems from concatenating intent information only at the end, which prevents applying $\gamma\!\cdot\! x+\beta$ modulation to per-layer node representations and hence reshaping the message-passing process according to flow intent. This trend is consistent across all three topologies (Fig.~\ref{fig:repr_training}): QoS-FiLM clearly leads noFiLM-Tf and MLP, and converges faster with smaller variance (NOBEL-EU: QoS-FiLM $-0.108$ vs.\ noFiLM-Tf $-0.282$; ABILENE: $+0.122$ vs.\ $+0.008$).
 
@@ -334,5 +330,5 @@ noFiLM-Tf         & $1.4\times10^{-6}$ & All zero \\
 
 
 
-\textbf{Decision level: intent-driven path selection diversity.} Differences at the representation level ultimately manifest as changes in routing behavior. Over $200$ test episodes comprising $460$ (src, dst) pairs, we compute the entropy of the path-slot selection distribution for both variants (in bits; higher entropy indicates more diverse selection and stronger differentiation by state and intent). FiLM's mean entropy is $2.235$, significantly higher than noFiLM-Tf's $1.962$ (paired $t\!\approx\!14.7$, highly significant); on $76\%$ of (src, dst) pairs FiLM's entropy is higher, and FiLM uses $10.4$ path slots on average versus only $7.9$ for noFiLM-Tf. The FiLM policy can therefore make finer-grained, more differentiated path selections based on current link states and each flow's intent, whereas noFiLM-Tf, unable to perceive intent, relies on state alone and concentrates its selection on fewer path slots. This corroborates the sensitivity evidence from the representation level: \emph{the intent that FiLM injects into representations drives more diverse path selection}, linking representation-level differentiation to decision-level behavior.
+\textbf{Decision level: intent-driven path selection diversity.} Differences at the representation level ultimately manifest as changes in routing behavior. Over $200$ test episodes comprising $460$ (src, dst) pairs, we compute the entropy of the path-slot selection distribution for both variants (in bits; higher entropy indicates more diverse selection and stronger differentiation by state and intent). FiLM's mean entropy is $2.235$, significantly higher than noFiLM-Tf's $1.962$ (paired $t\!\approx\!14.7$, highly significant); on $76\%$ of (src, dst) pairs FiLM's entropy is higher, and FiLM uses $10.4$ \textcolor{red}{path slots} on average versus only $7.9$ for noFiLM-Tf. The FiLM policy can therefore make finer-grained, more differentiated path selections based on current link states and each flow's intent, whereas noFiLM-Tf, unable to perceive intent, relies on state alone and concentrates its selection on fewer \textcolor{red}{path slots}. This corroborates the sensitivity evidence from the representation level: \emph{the intent that FiLM injects into representations drives more diverse path selection}, linking representation-level differentiation to decision-level behavior.
 
