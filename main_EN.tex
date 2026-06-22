@@ -9,6 +9,8 @@
 \usepackage{multirow}
 \usepackage{url}
 \usepackage{xcolor}
+\usepackage{orcidlink}
+
 \usepackage[ruled,linesnumbered]{algorithm2e}
 % 子图命令：图片上方自动编号 (a),(b),(c)...
 \newcounter{subfigcnt}[figure]
@@ -28,15 +30,18 @@
 
 \title{QoS-FiLM: Intent-Conditioned GNNs for Per-Flow QoS Routing}
 
-\author{\IEEEauthorblockN{Anonymous Authors}
-\IEEEauthorblockA{Paper under double-blind review}}
-
+\author{Xiaolong Cui\textsuperscript{*}\hspace{-1.5mm}$^{~\orcidlink{0009-0008-1615-6727}}$, Yuwei Deng\textsuperscript{*}, Zixu Wang, Xiying Fan, Wei Huangfu\textsuperscript{\textdagger}\hspace{-1.5mm}$^{~\orcidlink{0000-0003-2887-8395}}$, ~\IEEEmembership{Senior Member,~IEEE}
+\thanks{\textsuperscript{*}These authors contributed equally to this work.}
+\thanks{Supported in part by the National Key Research and Development Program under grant 2023YFB2903901.
+The authors are with the School of Computer and Communication Engineering, University of Science and Technology Beijing, Beijing 100083, China (e-mail: cuixl@ustb.edu.cn). 
+\textsuperscript{\textdagger}Corresponding author: Wei Huangfu.}
+}
 \begin{document}
 \bstctlcite{IEEEexample:BSTcontrol}
 \maketitle
 
 \begin{abstract}
-Modern backbone networks carry heterogeneous traffic: small-bandwidth flows (e.g., latency-sensitive control signaling, remote desktop) demand strict latency guarantees and full bandwidth satisfaction, whereas large-bandwidth flows (e.g., distributed AI training, bulk backup) prioritize maximizing throughput and accept best-effort service. Existing online routing heuristics are myopic because they cannot foresee future arrivals. Existing learning-based methods suffer from a similar limitation, as they produce a single topology embedding shared by all flows regardless of the QoS intent, which limits their ability to differentiate routing under mixed services. We present QoS-FiLM, a flow-conditioned graph architecture that uses Feature-wise Linear Modulation (FiLM) to inject the QoS intent of each flow into every message-passing layer of a Graph Neural Network (GNN). This allows an identical substrate graph to be embedded differently for heterogeneous flows. We cast online per-flow routing as a stochastic Markov decision process and train the policy with proximal policy optimization (PPO). Across the GEANT, NOBEL-EU, and ABILENE topologies, QoS-FiLM surpasses both classical heuristics and learned network baselines in cumulative utility, bandwidth satisfaction ratio, and end-to-end latency. On GEANT, its mean reward improves by 0.167 over the strongest heuristic CSPF and by 0.219 over the flow-unaware ablation noFiLM-Tf; relative to noFiLM-Tf, the bandwidth score improves by 26.3\% and the average delay drops by 28.5\%. Ablation studies confirm that FiLM conditioning is essential and that it interacts strongly with the attention operator. Interpretability analysis further verifies that the encoder is highly sensitive to QoS intent and that the policy discriminates routing decisions by flow type.
+Modern backbone networks carry heterogeneous traffic: small-bandwidth flows (e.g., latency-sensitive control signaling, interactive web) demand strict latency guarantees and full bandwidth satisfaction, whereas large-bandwidth flows (e.g., distributed AI training, bulk backup) prioritize maximizing throughput and accept best-effort service. Existing online routing heuristics are myopic because they cannot foresee future arrivals. Recent learning-based methods address the myopia problem yet still suffer from a critical limitation: they produce a single topology embedding shared by all flows regardless of the QoS intent, thereby limiting their ability to differentiate routing under mixed services. We present QoS-FiLM, a flow-conditioned graph architecture that uses Feature-wise Linear Modulation (FiLM) to inject the QoS intent of each flow into every message-passing layer of a Graph Neural Network (GNN). This enables the same substrate graph to yield distinct embeddings for heterogeneous flows. We cast online per-flow routing as a stochastic Markov decision process and train the policy with proximal policy optimization (PPO). Experimental evaluation across the GEANT, NOBEL-EU, and ABILENE topologies shows that QoS-FiLM surpasses both classical heuristics and learned network baselines in cumulative utility, bandwidth satisfaction ratio, and end-to-end latency. On GEANT, the mean reward improves by $0.167$ over the strongest heuristic CSPF and by $0.219$ over the flow-unaware baseline noFiLM-Tf. Compared with noFiLM-Tf, the bandwidth score improves by $26.3\%$ and the average delay drops by $28.5\%$. Ablation studies confirm that FiLM conditioning is essential and exhibits strong synergy with the underlying attention mechanism. Interpretability analysis further verifies that the encoder is highly sensitive to QoS intent and that the policy differentiates routing decisions according to flow type.
 \end{abstract}
 
 \begin{IEEEkeywords}
