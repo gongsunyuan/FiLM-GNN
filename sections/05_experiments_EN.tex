@@ -23,7 +23,7 @@ We evaluate QoS-FiLM through four experiments: comparison with classical and lea
 \subsection{Experimental Setup}
 \label{sec:exp:setup}
 
-The experiments are conducted on three backbone topologies (Fig.~\ref{fig:topologies}). All link attributes are randomly regenerated at the start of each episode: bandwidth is sampled from $\text{Uniform}[30,100]$ and delay from $\text{Uniform}[1,20]$. Traffic generation follows the model of \S\ref{sec:problem:model}: $\phi$ is drawn from $\text{Beta}(\alpha, 1)$ ($\alpha\!=\!0.2$) and $b$ from Eq.~\eqref{eq:bw_gen} with $b_{\text{max}}\!=\!40$ and $\sigma\!=\!0.15\,(b_{\text{max}}\!-\!b_{\text{floor}})$.
+The experiments are conducted on three backbone topologies (Fig.~\ref{fig:topologies}). All link attributes are randomly regenerated at the start of each episode: bandwidth is sampled from $\text{Uniform}[30,100]$ and delay from $\text{Uniform}[1,20]$. Traffic generation follows the model of \S\ref{sec:problem:model}: $\phi$ is drawn from $\text{Beta}(\alpha, 1)$ ($\alpha\!=\!0.2$) and $b$ from Eq.~\eqref{eq:bw_gen} with $b_{\text{max}}\!=\!40$, $b_{\text{floor}}\!=\!0$, and $\sigma\!=\!0.15\,(b_{\text{max}}\!-\!b_{\text{floor}})\!=\!6.0$.
 
 
 Each episode contains $W=150$ flows arriving sequentially; For ABILENE, $W=50$ is used to keep the traffic load within the smaller topology's carrying capacity and avoid saturating its 15 links.
@@ -71,8 +71,13 @@ Category & Hyperparameter & Value \\
  & PPO epochs $E$ / minibatch & $5$ / $512$ \\
  & Learning rate $\eta$ / optimizer   & $3\times10^{-4}$ / Adam \\
 \midrule
-\multirow{5}{*}{Task}
+\multirow{9}{*}{Task}
  & $\phi$ dist.                & $\text{Beta}(0.2, 1)$ \\
+ & $b_{\text{max}}$            & $40$ \\
+ & $b_{\text{floor}}$          & $0$ \\
+ & BW noise $\sigma$           & $0.15\,(b_{\text{max}}\!-\!b_{\text{floor}})\!=\!6.0$ \\
+ & Link bandwidth              & $\text{Uniform}[30,100]$ \\
+ & Link delay                  & $\text{Uniform}[1,20]$ \\
  & Delay norm.\ $\tau$          & $38.3$ \\
  & Training frames $T$         & $2\times10^{6}$ \\
  & Gradient clip               & $1.0$ \\
@@ -86,7 +91,7 @@ Category & Hyperparameter & Value \\
 %We first compare QoS-FiLM against classical routing algorithms to quantify the advantage of flow-aware representations. To isolate the ``learned policy vs.\ classical algorithm'' comparison, this section contrasts QoS-FiLM with the four classical baselines; ablation comparisons against the noFiLM-Tf and MLP (no message-passing) variants are deferred to Section~\ref{sec:exp:repr}.
 We compare QoS-FiLM against five methods. Three classical algorithms: OSPF (shortest-path routing with unit link weights), ECMP (equal-cost multipath, splitting traffic across all shortest paths), and CSPF (constrained shortest path first, selecting the path with minimum delay among those satisfying the bandwidth constraint). Two learned agents: \textbf{noFiLM-Tf}---a GNN-based DRL policy with TransformerConv backbone that omits FiLM conditioning, concatenating flow intent only at the final scorer; and \textbf{noFiLM-GATv2}---identical to noFiLM-Tf but with GATv2Conv backbone, serving as the dual baseline for the operator comparison (\S\ref{sec:exp:conv}). 
 
-In GEANT, QoS-FiLM outperforms all baselines on all three metrics (Fig.~\ref{fig:main_bars}): its mean reward of $+0.121$ exceeds that of the strongest classical baseline CSPF ($-0.046$) by $+0.167$, its BW Score of $0.759$ exceeds CSPF's ($0.473$) by $0.286$, and its average delay drops from $130.0$ to $112.9$~ms.
+In GEANT, QoS-FiLM outperforms all baselines on all three metrics (Fig.~\ref{fig:main_bars}): its mean reward of $+0.121$ exceeds that of the strongest classical baseline CSPF ($-0.046$) by $+0.167$, its BW Score of $0.759$ exceeds CSPF's ($0.642$) by $0.117$, and its average delay drops from $130.0$ to $112.9$~ms.
 Although CSPF attains the lowest delay among the classical baselines ($130.0$~ms), it does so at the expense of bandwidth satisfaction (BW Score only $0.642$), resulting in a mean reward ($-0.046$) far below QoS-FiLM's $+0.121$.
 This confirms that delay alone is an insufficient proxy for overall service quality; QoS-FiLM achieves both lower delay and superior reward by jointly optimizing bandwidth satisfaction and latency.
 This advantage holds across all three topologies: QoS-FiLM beats the respective strongest baseline CSPF on GEANT ($+0.121$ vs.\ $-0.046$), NOBEL-EU ($-0.108$ vs.\ $-0.183$), and ABILENE ($+0.122$ vs.\ $+0.041$), showing that flow-aware representations yield consistent gains without topology-specific hyperparameter tuning. %In Fig.~\ref{fig:main_bars}, solid colored bars represent learned network variants (QoS-FiLM highlighted), while gray hatched bars represent static baselines.
