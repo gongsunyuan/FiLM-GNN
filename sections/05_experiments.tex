@@ -4,7 +4,7 @@
 \subsection{实验设置}
 \label{sec:exp:setup}
 
-\textbf{拓扑与流量。} 主实验在 GEANT 骨干网拓扑（$22$ 节点、$36$ 条链路）上进行。为训练能泛化到不同网络状态的策略，每个 episode 开始时重新随机生成全部链路属性：带宽从 $\text{Uniform}[30,100]$ 采样、时延从 $\text{Uniform}[1,20]$ 采样。流量生成以 QoS 意图 $\phi$ 为主导变量：$\phi$ 由 Pareto 翻转分布（$\alpha\!=\!0.2$）生成，使绝大部分流集中于低 $\phi$ 区间（即带宽与延迟约束严格的老鼠流），仅少量流为高 $\phi$（约束宽松的大象流）。带宽需求 $b$ 由 $\phi$ 通过正相关线性映射导出（式~\eqref{eq:bw_gen}），其中 $b_{\text{max}}\!=\!40$，高斯噪声标准差为跨度的 $0.15$ 倍，使 $\phi$ 与 $b$ 保持强正相关（Pearson $r\!\approx\!0.90$）但非完全确定——$\phi$ 仍携带 $b$ 之外的独立信息。
+\textbf{拓扑与流量。} 主实验在 GEANT 骨干网拓扑（$22$ 节点、$36$ 条链路）上进行。为训练能泛化到不同网络状态的策略，每个 episode 开始时重新随机生成全部链路属性：带宽从 $\text{Uniform}[30,100]$ 采样、时延从 $\text{Uniform}[1,20]$ 采样。流量生成以 QoS 意图 $\phi$ 为主导变量：$\phi$ 由 $\text{Beta}(\alpha, 1)$（$\alpha\!=\!0.2$）生成，使绝大部分流集中于低 $\phi$ 区间（即带宽与延迟约束严格的老鼠流），仅少量流为高 $\phi$（约束宽松的大象流）。带宽需求 $b$ 由 $\phi$ 通过正相关线性映射导出（式~\eqref{eq:bw_gen}），其中 $b_{\text{max}}\!=\!40$，高斯噪声标准差为跨度的 $0.15$ 倍，使 $\phi$ 与 $b$ 保持强正相关（Pearson $r\!\approx\!0.90$）但非完全确定——$\phi$ 仍携带 $b$ 之外的独立信息。
 
 \begin{figure*}[t]
 \centering
@@ -33,7 +33,7 @@
 \subsection{超参数与实现细节}
 \label{sec:exp:hyperparam}
 
-第~\ref{sec:problem}--\ref{sec:method} 节中以符号表示的全部超参数，其具体取值列于表~\ref{tab:hyperparam}，选择依据如下。模型结构方面，隐藏维 $h=256$ 与 4 层 GNN 参照了 RouteNet~\cite{Rusek2020_JSAC_RouteNet} 与 GNN-FiLM~\cite{Brockschmidt2020_GNNFiLM} 在路由场景中 $h\in[64,256]$、$L\in[2,5]$ 的常见配置范围；单注意力头与 UniMP~\cite{Shi2021_UniMP} 默认设置一致。PPO 训练方面，$\gamma=1.0$ 因任务为有限视界序列（episodic），其余裁剪系数、GAE 参数与价值系数沿用 PPO 原论文~\cite{Schulman2017_PPO,Schulman2016_GAE} 默认值；熵系数 $c_e=0.01$ 与 minibatch 大小经网格搜索确定。任务方面，Pareto $\alpha=0.2$ 使低 $\phi$ 流占比超 80\%，契合测量研究~\cite{CISCO2023_GlobalTraffic} 报告的真实流量重尾特征；流带宽上限 $b_{\text{max}}=40$ 与链路容量下限 $30$ 之比使单流即可造成瓶颈，为策略预留容量提供学习信号；时延归一化常数 $\tau=38.3$ 取 GEANT 拓扑 P25 时延。模型结构与训练系数对所有变体一致；所有变体共享相同超参数；链路属性每 episode 随机重采样。实现基于 PyTorch、TorchRL 与 PyTorch Geometric。
+第~\ref{sec:problem}--\ref{sec:method} 节中以符号表示的全部超参数，其具体取值列于表~\ref{tab:hyperparam}，选择依据如下。模型结构方面，隐藏维 $h=256$ 与 4 层 GNN 参照了 RouteNet~\cite{Rusek2020_JSAC_RouteNet} 与 GNN-FiLM~\cite{Brockschmidt2020_GNNFiLM} 在路由场景中 $h\in[64,256]$、$L\in[2,5]$ 的常见配置范围；单注意力头与 UniMP~\cite{Shi2021_UniMP} 默认设置一致。PPO 训练方面，$\gamma=1.0$ 因任务为有限视界序列（episodic），其余裁剪系数、GAE 参数与价值系数沿用 PPO 原论文~\cite{Schulman2017_PPO,Schulman2016_GAE} 默认值；熵系数 $c_e=0.01$ 与 minibatch 大小经网格搜索确定。任务方面，$\text{Beta}(\alpha, 1)$（$\alpha=0.2$）使低 $\phi$ 流占比超 80\%，契合测量研究~\cite{CISCO2023_GlobalTraffic} 报告的真实流量重尾特征；流带宽上限 $b_{\text{max}}=40$ 与链路容量下限 $30$ 之比使单流即可造成瓶颈，为策略预留容量提供学习信号；时延归一化常数 $\tau=38.3$ 取 GEANT 拓扑 P25 时延。模型结构与训练系数对所有变体一致；所有变体共享相同超参数；链路属性每 episode 随机重采样。实现基于 PyTorch、TorchRL 与 PyTorch Geometric。
 
 \begin{table}[t]
 \centering
@@ -71,7 +71,7 @@
  & 序列长度 $W$            & $150$ \\
  & 流带宽上限 $b_{\text{max}}$ & $40$ \\
  & 流带宽下限 $b_{\text{floor}}$ & $0$ \\
- & $\phi$ 分布 Pareto $\alpha$ & $0.2$ \\
+ & $\phi$ 分布 Beta $\alpha$ & $0.2$ \\
  & 带宽噪声 $\sigma$      & $0.15\times(b_{\text{max}}-b_{\text{floor}})=6.0$ \\
  & 时延归一化常数 $\tau$  & $38.3$（GEANT 实测 P25 时延）\\
  & 总训练帧数 $T$         & $2\times10^{6}$ \\
