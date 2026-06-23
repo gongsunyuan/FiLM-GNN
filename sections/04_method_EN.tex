@@ -4,9 +4,9 @@
 This section formalizes the online routing optimization of \S\ref{sec:problem:objective} as an MDP (\S\ref{sec:method:mdp}), 
 justifies the choice of PPO as the training algorithm (\S\ref{sec:method:algo}), and presents the flow-aware QoS-FiLM architecture (\S\ref{sec:method:encoder}--\S\ref{sec:method:train}).
 
-QoS-FiLM consists of three main components (Fig.~\ref{fig:film_gnn_arch}): \textbf{(i)} a FiLM-conditioned GNN encoder that injects per-flow QoS intent into every message-passing layer to produce differentiated topology embeddings; 
-\textbf{(ii)} an actor head that pools path representations via LSTM and scores $K$ candidate paths for action selection; 
-and \textbf{(iii)} a critic head that aggregates node embeddings via attention pooling for value estimation. These components operate in a closed MDP loop trained end-to-end with PPO.
+QoS-FiLM consists of three main components (Fig.~\ref{fig:film_gnn_arch}): (i) a FiLM-conditioned GNN encoder that injects per-flow QoS intent into every message-passing layer to produce differentiated topology embeddings; 
+(ii) an actor head that pools path representations via LSTM and scores $K$ candidate paths for action selection; 
+and (iii) a critic head that aggregates node embeddings via attention pooling for value estimation. These components operate in a closed MDP loop trained end-to-end with PPO.
 
 \begin{figure}[t]
 \centering
@@ -20,35 +20,33 @@ and \textbf{(iii)} a critic head that aggregates node embeddings via attention p
 
 The online routing optimization of \S\ref{sec:problem:objective} is cast as an MDP $(\mathcal{S},\mathcal{A},P,r)$. At step $t$ the agent selects, for the $t$-th flow $\mathbf{f}_t$, a path from the candidate set $\mathcal{P}_t$.
 
-\textbf{State} $s_t \in \mathcal{S}$ consists of three parts:
-\begin{enumerate}
-\item \emph{Graph snapshot}: node features (marking the source and destination $o_t,v_t$ of the current flow) and link features $[d_e,\,c_e,\,b_e^{\text{res}}]$ (delay, capacity, residual bandwidth);
-\item \emph{Flow intent vector} $m_t=[\phi_t,\,\tilde b_t]$, where $\tilde b_t$ is the normalized bandwidth demand;
-\item \emph{Candidate paths} $\mathcal{P}_t$ and their validity masks: each path is padded to a fixed tensor length, and the binary mask indicates which positions correspond to actual path nodes versus padding tokens.
-\end{enumerate}
+The state $s_t \in \mathcal{S}$ consists of three parts: (i)~Graph snapshot: node features (marking the source and destination $o_t,v_t$ of the current flow) and link features $[d_e,\,c_e,\,b_e^{\text{res}}]$ (delay, capacity, residual bandwidth);
+(ii)~Flow intent vector $m_t=[\phi_t,\,\tilde b_t]$, where $\tilde b_t$ is the normalized bandwidth demand;
+(iii)~Candidate paths $\mathcal{P}_t$ and their validity masks: each path is padded to a fixed tensor length, and the binary mask indicates which positions correspond to actual path nodes versus padding tokens.
 The observation contains only the current flow $\mathbf{f}_t$ and excludes future flows $\{\mathbf{f}_\tau\}_{\tau>t}$, consistent with the online causal constraint of \S\ref{sec:problem:objective}.
 
-\textbf{Action} $a_t\in\mathcal{A}=\{0,1,\dots,K-1\}$ is a discrete choice, selecting the $a_t$-th candidate path $p_t=p_t^{a_t}$ from the $K$ candidates to carry the current flow.
+The action $a_t\in\mathcal{A}=\{0,1,\dots,K-1\}$ is a discrete choice, selecting the $a_t$-th candidate path $p_t=p_t^{a_t}$ from the $K$ candidates to carry the current flow.
 
-\textbf{Transition} must be distinguished at two levels. Given the current flow and the selected path, resource accounting is deterministic: the residual bandwidth $b_e^{\text{res}}$ is reduced by $\hat b_t$ and the time step advances to $t+1$. The next arriving flow $\mathbf{f}_{t+1}$, however, is drawn from $\mathcal{D}$ and is invisible to the agent before it arrives. The full state transition $P(s_{t+1}\mid s_t,a_t)$ is therefore stochastic, matching the ``deterministic accounting, unseen future'' structure of \S\ref{sec:problem:objective}.
+The transition dynamics must be distinguished at two levels. Given the current flow and the selected path, resource accounting is deterministic: the residual bandwidth $b_e^{\text{res}}$ is reduced by $\hat b_t$ and the time step advances to $t+1$. The next arriving flow $\mathbf{f}_{t+1}$, however, is drawn from $\mathcal{D}$ and is invisible to the agent before it arrives. The full state transition $P(s_{t+1}\mid s_t,a_t)$ is therefore stochastic, matching the ``deterministic accounting, unseen future'' structure of \S\ref{sec:problem:objective}.
 
-\textbf{Reward} is taken directly from the utility function $U(\mathbf{f}_t,p_t)$ of \S\ref{sec:problem:objective} (Eq.~\eqref{eq:utility}), shifted by a constant $-1$ to narrow the reward range and facilitate value function learning:
+The reward is taken directly from the utility function $U(\mathbf{f}_t,p_t)$ of \S\ref{sec:problem:objective} (Eq.~\eqref{eq:utility}), shifted by a constant $-1$ to narrow the reward range and facilitate value function learning:
 \begin{equation}
 r_t = U(\mathbf{f}_t, p_t) - 1
     = -1 + U^{\text{bw}}_t + U^{\text{dl}}_t.
 \label{eq:reward}
 \end{equation}
-The reward range is $[-1, 1]$. For elephant flows ($\phi_t\to 1$) the delay utility term approaches zero and the reward upper bound is $0$ (attained when $\rho_t=1$); for mouse flows ($\phi_t\to 0$), when bandwidth is fully satisfied and delay is very low, both utility terms can take relatively large positive values, so the reward for this class of flows can exceed $0$. Under a test distribution dominated by mouse flows, the mean reward can therefore be positive overall. Because the offset constant does not change the optimal policy, maximizing the cumulative reward $\sum_t r_t$ is equivalent to maximizing the cumulative utility (Eq.~\eqref{eq:objective}). The structure of Eq.~\eqref{eq:reward} implies that, to earn high rewards on both mouse flows (which require hard bandwidth satisfaction and low latency) and elephant flows (which value the throughput ratio), the policy must \emph{perceive and differentiate the QoS intent} $\phi_t$ of each flow. This motivates the flow-aware encoder presented below.
+The reward range is $[-1, 1]$. For elephant flows ($\phi_t\to 1$) the delay utility term approaches zero and the reward upper bound is $0$ (attained when $\rho_t=1$); for mouse flows ($\phi_t\to 0$), when bandwidth is fully satisfied and delay is very low, both utility terms can take relatively large positive values, so the reward for this class of flows can exceed $0$. Under a test distribution dominated by mouse flows, the mean reward can therefore be positive overall. Because the offset constant does not change the optimal policy, maximizing the cumulative reward $\sum_t r_t$ is equivalent to maximizing the cumulative utility (Eq.~\eqref{eq:objective}). The structure of Eq.~\eqref{eq:reward} implies that, to earn high rewards on both mouse flows (which require hard bandwidth satisfaction and low latency) and elephant flows (which value the throughput ratio), the policy must perceive and differentiate the QoS intent $\phi_t$ of each flow. This motivates the flow-aware encoder presented below.
 
 \subsection{Choice of Training Algorithm}
 \label{sec:method:algo}
 
-\S\ref{sec:problem:objective} argued that this problem is an online stochastic optimization over the demand distribution that requires a non-myopic policy. We adopt PPO for several reasons. Its stochastic policy naturally parameterizes the discrete choice among $K$ paths via a Categorical distribution. Its clipped objective keeps updates stable, accommodating the large difference in reward scales between the two flow types. On-policy data collection matches the online deployment setting, and combined with generalized advantage estimation (GAE) it achieves the long-range credit assignment that non-myopic decision-making demands. Being model-free, it also avoids explicit modeling of the transition stochasticity caused by the unknown arrival distribution $\mathcal{D}$. Since the task is episodic with a bounded number of flows, returns are computed without discounting so that all rewards within an episode are equally weighted. The clipping coefficient, GAE parameter, and value coefficient follow the standard PPO defaults~\cite{Schulman2017_PPO,Schulman2016_GAE}; the entropy coefficient and minibatch size are tuned via grid search (\S\ref{sec:exp:hyperparam}).
+\S\ref{sec:problem:objective} argued that this problem is an online stochastic optimization over the demand distribution that requires a non-myopic policy. We adopt PPO for several reasons. Its stochastic policy naturally parameterizes the discrete choice among $K$ paths via a Categorical distribution. Its clipped objective keeps updates stable, accommodating the large difference in reward scales between the two flow types. On-policy data collection matches the online deployment setting, and combined with generalized advantage estimation (GAE) it achieves the long-range credit assignment that non-myopic decision-making demands. Being model-free, it also avoids explicit modeling of the transition stochasticity caused by the unknown arrival distribution $\mathcal{D}$.
+Since the task is episodic with a bounded number of flows, returns are computed without discounting so that all rewards within an episode are equally weighted. 
 
 \subsection{Flow-Aware QoS-FiLM Encoder}
 \label{sec:method:encoder}
 
-Fig.~\ref{fig:film_gnn_arch} gives a high-level picture of the overall architecture. The encoder maps the graph snapshot in the state into node embeddings (i.e., a vector representation for each node). The core idea is that every layer of message passing should ``know which flow is currently being routed,'' so that flows with different QoS intents yield different topological representations. We implement this conditioning with FiLM~\cite{Perez2018_FiLM}. The hidden dimension and the number of message-passing layers follow the common ranges adopted by RouteNet~\cite{Rusek2020_JSAC_RouteNet} and GNN-FiLM~\cite{Brockschmidt2020_GNNFiLM} in networking scenarios; a single attention head is used, consistent with prior work~\cite{Shi2021_UniMP}. Specific values are given in Table~\ref{tab:hyperparam}. Let the link feature vector be $f_e = [d_e,\, c_e,\, b_e^{\text{res}}] \in \mathbb{R}^3$, the concatenation of delay, capacity, and residual bandwidth. Let the hidden dimension be $h$. A Multi-Layer Perceptron (MLP) $\mathrm{MLP}_{\text{lift}}$ first lifts the raw node features to $h$ dimensions: $x^{(0)}=\mathrm{MLP}_{\text{lift}}(x)$. We then stack $L$ graph attention blocks.
+Fig.~\ref{fig:film_gnn_arch} gives a high-level picture of the overall architecture. The encoder maps the graph snapshot in the state into node embeddings (i.e., a vector representation for each node). The core idea is that every layer of message passing should ``know which flow is currently being routed,'' so that flows with different QoS intents yield different topological representations. We implement this conditioning with FiLM~\cite{Perez2018_FiLM}. Let the link feature vector be $f_e = [d_e,\, c_e,\, b_e^{\text{res}}] \in \mathbb{R}^3$, the concatenation of delay, capacity, and residual bandwidth. Let the hidden dimension be $h$. A Multi-Layer Perceptron (MLP) $\mathrm{MLP}_{\text{lift}}$ first lifts the raw node features to $h$ dimensions: $x^{(0)}=\mathrm{MLP}_{\text{lift}}(x)$. We then stack $L$ graph attention blocks.
 
 The $\ell$-th layer receives the current flow's intent vector $m_t$ and generates per-channel (per-dimension of the $h$-dimensional hidden vector) scaling and shifting parameters through two independent MLPs:
 \begin{align}
@@ -69,22 +67,23 @@ where $\mathrm{Conv}^{(\ell)}$ is a graph attention operator (default: Transform
 % 均标注该算子来自 "Masked Label Prediction: Unified Message Passing Model for
 % Semi-Supervised Classification"(Shi et al., IJCAI 2021, arXiv:2009.03509),
 % 即 Shi2021_UniMP。经三方交叉验证确认此为原始文献。
--style dot-product attention, with link features $f$ as edge attributes), $\mathrm{LN}$ is layer normalization, $\odot$ is element-wise multiplication, and the final term is a residual connection (adding the layer input directly to its output to ease the training of deep networks). Eq.~\eqref{eq:film} is the key to our method: at \emph{every layer}, the intent vector $m_t$ reshapes node representations through the affine transformation $(1+\gamma)\odot\tilde x+\beta$, so that the same physical topology is encoded into different embeddings for mouse flows and elephant flows. The fundamental distinction from GNN-FiLM~\cite{Brockschmidt2020_GNNFiLM} is the source of $\gamma,\beta$: GNN-FiLM computes them from target node representations, whereas we compute them from per-flow QoS intent, making 
+-style dot-product attention, with link features $f$ as edge attributes), $\mathrm{LN}$ is layer normalization, $\odot$ is element-wise multiplication, and the final term is a residual connection (adding the layer input directly to its output to ease the training of deep networks). Eq.~\eqref{eq:film} is the key to our method: at every layer, the intent vector $m_t$ reshapes node representations through the affine transformation $(1+\gamma)\odot\tilde x+\beta$, so that the same physical topology is encoded into different embeddings for mouse flows and elephant flows. The fundamental distinction from GNN-FiLM~\cite{Brockschmidt2020_GNNFiLM} is the source of $\gamma,\beta$: GNN-FiLM computes them from target node representations, whereas we compute them from per-flow QoS intent, making 
 message passing flow-aware.
 
 \subsection{Path Pooling, Scoring, and Value Network}
 \label{sec:method:scorer}
 
-\textbf{Path Pooling.} A path pooler (PathPooler) converts the node embeddings $x^{(L)}$ into candidate path representations. For the $k$-th candidate path, the node embeddings along its sequence are extracted and encoded by an LSTM to yield the path embedding $z_k\in\mathbb{R}^{h}$. The $K$ candidate paths are thus pooled into $\{z_k\}_{k=1}^{K}$.
+After the GNN encoder produces node embeddings, the path pooler (PathPooler) 
+converts them into candidate path representations. For the $k$-th candidate path, the node embeddings along its sequence are extracted and encoded by an LSTM to yield the path embedding $z_k\in\mathbb{R}^{h}$. The $K$ candidate paths are thus pooled into $\{z_k\}_{k=1}^{K}$.
 
-\textbf{Scoring and Policy.} The scorer $\mathrm{KPathScorer}$ concatenates each path embedding with the current flow intent as $[z_k; m_t]$, passes it through a feature MLP (ELU $+$ LayerNorm) and then a scoring-head MLP, and outputs a scalar logit $\ell_k$ (an unnormalized score). The $K$ logits form a Categorical distribution from which the policy samples an action:
+Each pooled path embedding is then scored jointly with the flow intent. The scorer $\mathrm{KPathScorer}$ concatenates each path embedding with the current flow intent as $[z_k; m_t]$, passes it through a feature MLP (ELU $+$ LayerNorm) and then a scoring-head MLP, and outputs a scalar logit $\ell_k$ (an unnormalized score). The $K$ logits form a Categorical distribution from which the policy samples an action:
 \begin{equation}
 \pi_\theta(a_t\!=\!k\mid s_t) = \mathrm{softmax}_k(\ell_1,\dots,\ell_K).
 \label{eq:policy}
 \end{equation}
 If the intent vector $m_t$ entered only at the final scorer, the paths would already have been pooled into fixed vectors, so intent information could no longer back-propagate to influence the topological representation, causing irreversible information loss.
 
-\textbf{Value Network.} The policy and value networks use independent encoders because their optimization objectives conflict: the policy must learn relative preferences among actions to support exploration, whereas the value function must regress scalar returns accurately. Sharing parameters would cause gradient interference and training instability. The value network pools its output node embeddings into a single graph-level vector via attention: each node's attention weight is computed from its embedding and the flow intent $m_t$, so that nodes relevant to the current flow's QoS requirements contribute more to the pooled representation; an MLP regresses this vector into a scalar state value $V_\psi(s_t)$.
+The value network follows a different design from the actor head because their optimization objectives conflict: the policy must learn relative preferences among actions to support exploration, whereas the value function must regress scalar returns accurately. Sharing parameters would cause gradient interference and training instability. The value network pools its output node embeddings into a single graph-level vector via attention: each node's attention weight is computed from its embedding and the flow intent $m_t$, so that nodes relevant to the current flow's QoS requirements contribute more to the pooled representation; an MLP regresses this vector into a scalar state value $V_\psi(s_t)$.
 
 \begin{algorithm}[t]
 \caption{PPO Training for QoS-FiLM}
@@ -124,9 +123,8 @@ Training uses PPO, with advantages computed by GAE. The loss combines the clippe
 where $\mathcal{L}^{\text{clip}}_\theta$ is the policy objective controlled by the clipping coefficient $\epsilon$, $c_v, c_e$ are value and entropy coefficients respectively, and advantages are normalized within each minibatch. 
 
 
+The complete procedure is given in Algorithm~\ref{alg:ppo}. At each iteration, the agent collects $B$ rollout transitions by interacting with the environment using the stochastic policy $\pi_\theta$ (Line~3), then computes advantage estimates $\hat A_t$ and return targets $\hat R_t$ via GAE (Line~4).
+The collected data is reused for $E$ PPO epochs with minibatch updates, optimizing the clipped surrogate loss $\mathcal{L}(\theta,\psi)$ defined in Eq.~\eqref{eq:loss} (Lines~5--11). Finally, the learning rate is decayed via cosine annealing (Line~12), and the best checkpoint is periodically saved based on deterministic evaluation rollouts (Line~13).
 
-
-The complete procedure is given in Algorithm~\ref{alg:ppo}. At each iteration, the agent collects $B$ rollout transitions by interacting with the environment using the stochastic policy $\pi_\theta$ (Step~3), then computes advantage estimates $\hat A_t$ and return targets $\hat R_t$ via GAE (Step~4).
-The collected data is reused for $E$ PPO epochs with minibatch updates, optimizing the clipped surrogate loss $\mathcal{L}(\theta,\psi)$ defined in Eq.~\eqref{eq:loss} (Steps~5--11). Finally, the learning rate is decayed via cosine annealing (Step~12), and the best checkpoint is periodically saved based on deterministic evaluation rollouts (Step~13). To prevent overfitting to specific paths, link attributes and flow sequences are randomized at the start of each episode; this forces the policy to learn generalizable routing strategies rather than memorizing fixed paths.
 
 
